@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pré-MBA USP Gestão Comercial e Salestech | Fundace FEA-RP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --yellow:        #feb737;
+      --yellow-light:  #ffd166;
+      --white:         #ffffff;
+      --bg-dark:       #0c0c0c;
+      --text-muted:    rgba(255,255,255,0.78);
+      --text-dim:      rgba(255,255,255,0.72);
+      --text-faint:    rgba(255,255,255,0.48);
+      --border-subtle: rgba(255,255,255,0.08);
+      --yellow-full:   rgba(254,183,55,1);
+      --yellow-88:     rgba(254,183,55,0.88);
+      --yellow-18:     rgba(254,183,55,0.18);
+      --yellow-glow:   rgba(254,183,55,0.28);
+      --radius-sm:     10px;
+      --radius-md:     14px;
+      --radius-lg:     22px;
+      --radius-pill:   999px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--white); background: #000; overflow-x: hidden; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+
+    /* ---- PROGRESS BAR ---- */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--yellow), var(--yellow-light));
+      z-index: 9999; transition: width 0.1s linear;
+    }
+
+    /* ---- BASE ---- */
+    .container { max-width: 1200px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
+
+    .section-tag {
+      display: inline-flex; align-items: center;
+      font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em;
+      padding: 7px 12px; border-radius: var(--radius-pill); margin-bottom: 16px;
+      position: relative; background: rgba(255,255,255,0.03); backdrop-filter: blur(6px);
+    }
+    .section-tag::before {
+      content: ""; position: absolute; inset: 0; border-radius: var(--radius-pill); padding: 1px;
+      background: linear-gradient(135deg, var(--yellow-88), var(--yellow-18));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+    }
+
+    .section-title { font-size: 28px; line-height: 1.1; margin-bottom: 18px; font-weight: 700; letter-spacing: -0.025em; color: var(--white); }
+    .section-title .hl { color: var(--yellow); }
+
+    .hero-btn {
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+      padding: 18px 32px;
+      background: linear-gradient(135deg, var(--yellow-light), var(--yellow));
+      color: #000; text-decoration: none; border-radius: var(--radius-sm);
+      font-weight: 700; letter-spacing: 0.3px; font-size: 16px; border: none; cursor: pointer;
+      box-shadow: 0 10px 30px rgba(254,183,55,0.25); transition: all 0.25s ease;
+    }
+    .hero-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 40px rgba(254,183,55,0.35); }
+
+    /* ---- HEADER ---- */
+    #main-header {
+      position: fixed; top: 2px; left: 0; right: 0; z-index: 1000;
+      padding: 28px 20px 0; transition: all 0.3s ease;
+    }
+    #main-header .container { display: flex; align-items: center; justify-content: space-between; }
+    #main-header.scrolled {
+      background: rgba(0,0,0,0.92); padding: 14px 20px;
+      backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-subtle);
+      box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+    }
+    .hero-logo { height: 52px; opacity: 0.92; }
+
+    /* ---- HERO ---- */
+    #hero {
+      position: relative; min-height: 88vh;
+      display: flex; align-items: center;
+      padding: 144px 20px 68px; background: #000; overflow: hidden;
+    }
+    #hero::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(254,183,55,0.05) 0%, transparent 50%),
+                  linear-gradient(to bottom right, #0a0a0a, #000);
+    }
+    #hero::after {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 68% 42%, rgba(254,183,55,0.07), transparent 68%);
+    }
+    .hero-fade {
+      position: absolute; left: 0; right: 0; bottom: -2px; height: 220px;
+      background: linear-gradient(to bottom, transparent, rgba(5,5,5,0.5) 58%, #0c0c0c);
+      pointer-events: none; z-index: 3;
+    }
+    .hero-copy { max-width: 760px; position: relative; z-index: 2; }
+
+    .event-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; color: var(--yellow); font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 14px; padding: 7px 14px; border-radius: var(--radius-pill);
+      background: rgba(254,183,55,0.1); border: 1px solid rgba(254,183,55,0.3);
+    }
+    .event-badge::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--yellow); box-shadow: 0 0 8px rgba(254,183,55,0.9);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .hero-program-sub {
+      font-size: 13px; color: rgba(255,255,255,0.38); font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px;
+    }
+
+    h1 { font-size: 46px; line-height: 1.06; margin-bottom: 22px; font-weight: 700; letter-spacing: -0.03em; }
+    h1 .hl { color: var(--yellow); }
+
+    .hero-sub {
+      font-size: 15px; line-height: 1.65; color: rgba(255,255,255,0.74);
+      max-width: 600px; margin-bottom: 32px;
+      position: relative; padding-left: 20px;
+    }
+    .hero-sub::before {
+      content: ""; position: absolute; left: 0; top: 5px;
+      width: 2px; height: calc(100% - 10px); border-radius: var(--radius-pill);
+      background: linear-gradient(to bottom, rgba(254,183,55,0.95), rgba(254,183,55,0.1));
+      box-shadow: 0 0 18px rgba(254,183,55,0.22);
+      animation: sub-glow 3.6s ease-in-out infinite;
+    }
+    @keyframes sub-glow { 0%,100%{opacity:.5;transform:scaleY(.88)} 50%{opacity:1;transform:scaleY(1)} }
+
+    .event-info-row {
+      display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-bottom: 36px;
+    }
+    .event-info-item {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.88);
+    }
+    .event-info-sep { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+
+    /* ---- SECTIONS ---- */
+    .lp-section {
+      position: relative; padding: 100px 20px 90px;
+      background: var(--bg-dark); overflow: hidden;
+    }
+    .lp-section::before {
+      content: ""; position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(254,183,55,0.04), transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(254,183,55,0.03), transparent 26%);
+      pointer-events: none;
+    }
+    .sec-black { background: #050505; }
+    .sec-black::before {
+      background:
+        radial-gradient(circle at 80% 20%, rgba(254,183,55,0.05), transparent 28%),
+        radial-gradient(circle at 20% 80%, rgba(254,183,55,0.03), transparent 24%);
+    }
+
+    /* ---- DIFF STRIP ---- */
+    #diff-strip {
+      background: linear-gradient(180deg, #050505, #11100e 48%, #0c0c0c);
+      border-top: 1px solid rgba(254,183,55,0.2);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 12px 20px; position: relative; overflow: hidden;
+    }
+    #diff-strip::before {
+      content: ""; position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(254,183,55,0.1), transparent 16%, transparent 84%, rgba(254,183,55,0.08)),
+        radial-gradient(ellipse 80% 150% at 50% -30%, rgba(254,183,55,0.15), transparent 58%);
+      pointer-events: none; z-index: 0;
+    }
+    .diff-strip-inner {
+      position: relative; z-index: 1; max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+      border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.025); backdrop-filter: blur(12px);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.28); overflow: hidden;
+    }
+    .diff-item {
+      position: relative; display: flex; align-items: flex-start; gap: 16px;
+      min-height: 108px; padding: 22px 22px 20px;
+      border-right: 1px solid rgba(255,255,255,0.06); cursor: default;
+      transition: background 0.25s;
+    }
+    .diff-item:last-child { border-right: 0; }
+    .diff-item::before {
+      content: ""; position: absolute; left: 22px; right: 22px; top: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(254,183,55,0.95), transparent); opacity: .58;
+    }
+    .diff-item:hover { background: rgba(254,183,55,0.04); }
+    .diff-index {
+      flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(145deg, rgba(254,183,55,0.22), rgba(254,183,55,0.06));
+      border: 1px solid rgba(254,183,55,0.34); color: var(--yellow-light);
+      font-size: 10px; font-weight: 800;
+    }
+    .diff-copy { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+    .diff-kicker { color: rgba(254,183,55,.82); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+    .diff-copy strong { font-size: 16px; font-weight: 700; color: var(--white); line-height: 1.2; }
+    .diff-copy span { color: rgba(255,255,255,.52); font-size: 12px; line-height: 1.4; }
+
+    /* ---- POR QUE PARTICIPAR: split ---- */
+    .why-split { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+    .why-left .section-tag { display: inline-flex; }
+    .why-claim {
+      font-size: 17px; font-weight: 400; line-height: 1.65;
+      color: rgba(255,255,255,0.72);
+      margin: 24px 0 32px; font-style: italic;
+    }
+    .why-right-intro {
+      font-size: 14px; line-height: 1.65; color: var(--text-muted); margin-bottom: 22px;
+    }
+    .buyer-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-bottom: 26px; }
+    .buyer-list li {
+      display: flex; align-items: center; gap: 14px;
+      font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.88);
+      padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .buyer-list li:last-child { border-bottom: none; padding-bottom: 0; }
+    .buyer-dot {
+      width: 8px; height: 8px; min-width: 8px; border-radius: 50%;
+      background: var(--yellow); box-shadow: 0 0 10px rgba(254,183,55,0.45); flex-shrink: 0;
+    }
+    .why-outro {
+      font-size: 13px; line-height: 1.72; color: var(--text-muted);
+      padding-left: 22px; position: relative;
+    }
+    .why-outro::before {
+      content: ""; position: absolute; left: 0; top: 4px;
+      width: 2px; height: calc(100% - 8px); border-radius: var(--radius-pill);
+      background: linear-gradient(to bottom, var(--yellow-full), var(--yellow-18));
+    }
+
+    /* ---- O QUE VAI FALAR: reasons list ---- */
+    .reasons-wrap { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 52px; align-items: start; }
+    .reasons-copy { max-width: 400px; }
+    .reasons-title { font-size: 28px; line-height: 1.08; font-weight: 700; letter-spacing: -0.025em; color: var(--white); }
+    .reasons-title .hl { color: var(--yellow); }
+    .reasons-desc { font-size: 14px; line-height: 1.7; color: var(--text-muted); margin-top: 18px; }
+    .reason-item {
+      position: relative; display: grid; grid-template-columns: 72px minmax(0,1fr);
+      gap: 16px; align-items: start;
+      padding: 22px 0; border-bottom: 1px solid var(--border-subtle);
+      transition: transform 0.28s ease, border-color 0.28s ease;
+    }
+    .reason-item:first-child { padding-top: 4px; }
+    .reason-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .reason-item:hover { transform: translateX(6px); border-color: var(--yellow-18); }
+    .reason-item:hover .reason-title { color: var(--yellow); }
+    .reason-number {
+      font-family: 'Alfa Slab One', serif; font-size: 46px; line-height: 0.9;
+      color: rgba(255,255,255,0.07); letter-spacing: 0.02em; user-select: none; position: relative;
+    }
+    .reason-number::after {
+      content: ""; position: absolute; left: 3px; bottom: -5px;
+      width: 28px; height: 2px; border-radius: var(--radius-pill);
+      background: linear-gradient(to right, rgba(254,183,55,0.95), var(--yellow-18));
+      box-shadow: 0 0 12px var(--yellow-glow);
+    }
+    .reason-content { min-width: 0; }
+    .reason-title { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 6px; line-height: 1.3; transition: color .28s; }
+    .reason-text { font-size: 14px; line-height: 1.72; color: rgba(255,255,255,0.72); }
+
+    /* ---- PARA QUEM É ---- */
+    .pq-header { max-width: 620px; margin-bottom: 48px; }
+    .pq-scroll-outer { position: relative; }
+    .pq-scroll-outer::after {
+      content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 120px;
+      background: linear-gradient(to right, transparent, var(--bg-dark));
+      pointer-events: none; z-index: 1;
+    }
+    .pq-scroll {
+      display: flex; gap: 16px;
+      overflow-x: auto; scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      cursor: grab; padding-bottom: 4px;
+    }
+    .pq-scroll::-webkit-scrollbar { display: none; }
+    .pq-scroll:active { cursor: grabbing; }
+    .pq-card {
+      flex: 0 0 300px; scroll-snap-align: start;
+      position: relative; padding: 28px 24px 26px; border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
+      border: 1px solid var(--border-subtle); backdrop-filter: blur(8px);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+      overflow: hidden; transition: border-color 0.28s ease, transform 0.28s ease;
+    }
+    .pq-card::before {
+      content: ""; position: absolute; top: 0; left: 22px; right: 22px; height: 2px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(to right, rgba(254,183,55,0), rgba(254,183,55,0.95), rgba(254,183,55,0));
+      box-shadow: 0 0 18px var(--yellow-glow);
+    }
+    .pq-card:hover { border-color: rgba(254,183,55,0.22); transform: translateY(-4px); }
+    .pq-card h3 { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 10px; line-height: 1.3; }
+    .pq-card p { font-size: 13px; line-height: 1.72; color: rgba(255,255,255,0.68); }
+
+    .prereq-notice {
+      margin-top: 40px; padding: 18px 22px; border-radius: var(--radius-md);
+      background: rgba(254,183,55,0.06); border: 1px solid rgba(254,183,55,0.18);
+      display: flex; align-items: flex-start; gap: 14px;
+      font-size: 13px; color: rgba(255,255,255,0.78); line-height: 1.6;
+    }
+    .prereq-notice svg { flex-shrink: 0; margin-top: 2px; }
+    .prereq-notice strong { color: var(--yellow); }
+
+    /* ---- PALESTRANTE ---- */
+    .speaker-header { margin-bottom: 52px; }
+    .speaker-body { display: grid; grid-template-columns: 0.72fr 1.28fr; gap: 52px; align-items: start; }
+    .speaker-card {
+      position: relative; border-radius: 28px; text-align: center;
+      background: linear-gradient(160deg, rgba(254,183,55,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(254,183,55,0.2); box-shadow: 0 22px 50px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    /* foto do palestrante */
+    .speaker-photo-wrap {
+      position: relative; width: 100%; aspect-ratio: 4/5; overflow: hidden;
+      background: rgba(254,183,55,0.04);
+      border-bottom: 1px solid rgba(254,183,55,0.12);
+    }
+    .speaker-photo {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center top; display: block;
+    }
+    .speaker-photo-placeholder {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; color: rgba(254,183,55,0.22);
+    }
+    .speaker-photo-placeholder span {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: rgba(254,183,55,0.3);
+    }
+
+    .speaker-card-info { padding: 26px 24px 28px; }
+    .speaker-name { font-size: 20px; font-weight: 700; color: var(--white); line-height: 1.25; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .speaker-role { font-size: 13px; color: rgba(255,255,255,0.44); line-height: 1.55; margin-bottom: 20px; }
+    .speaker-pills { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; }
+    .speaker-pill {
+      font-size: 11px; font-weight: 600; color: var(--yellow);
+      padding: 5px 10px; border-radius: var(--radius-pill);
+      background: rgba(254,183,55,0.1); border: 1px solid rgba(254,183,55,0.25);
+    }
+
+    .speaker-intro {
+      font-size: 15px; line-height: 1.65; color: var(--text-muted);
+      margin-bottom: 28px; padding-left: 18px; position: relative;
+    }
+    .speaker-intro::before {
+      content: ""; position: absolute; left: 0; top: 4px;
+      width: 3px; height: calc(100% - 8px); border-radius: var(--radius-pill);
+      background: linear-gradient(to bottom, var(--yellow-full), var(--yellow-18));
+      box-shadow: 0 0 18px var(--yellow-glow);
+    }
+    .cred-list { display: flex; flex-direction: column; gap: 10px; }
+    .cred-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 18px; border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.025); border: 1px solid var(--border-subtle);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .cred-item:hover { transform: translateX(4px); border-color: var(--yellow-18); }
+    .cred-icon {
+      width: 34px; height: 34px; min-width: 34px; border-radius: 9px;
+      background: rgba(254,183,55,0.08); border: 1px solid rgba(254,183,55,0.18);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cred-text { font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.72); }
+    .cred-text strong { color: var(--white); font-weight: 700; display: block; margin-bottom: 2px; }
+
+    /* ---- SOBRE O MBA: off-white, split ---- */
+    #section-mba {
+      background: linear-gradient(160deg, #f9f6f0, #f2ede4 50%, #ede8de);
+      padding: 100px 20px;
+    }
+    #section-mba::before { display: none; }
+
+    .mba-split { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+    .mba-tag {
+      display: inline-flex; font-size: 11px; color: #7a5f18; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase;
+      margin-bottom: 16px; padding: 7px 12px; border-radius: var(--radius-pill);
+      background: rgba(180,140,40,.1); border: 1px solid rgba(180,140,40,.3);
+    }
+    .mba-title {
+      font-size: clamp(22px, 2.2vw, 34px); font-weight: 700; line-height: 1.1;
+      letter-spacing: -0.025em; color: #111; margin-bottom: 18px;
+    }
+    .mba-title .hl { color: #b8891e; }
+    .mba-intro-text { font-size: 15px; line-height: 1.7; color: #555; margin-bottom: 28px; }
+    .mba-closing {
+      font-size: 15px; font-weight: 600; line-height: 1.55; color: #222;
+      padding-left: 18px; border-left: 3px solid #b8891e;
+      margin-bottom: 32px; box-shadow: -6px 0 20px rgba(184,137,30,0.1);
+    }
+    .mba-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 16px 30px; border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #c9992a, #b8891e);
+      color: #fff; font-weight: 700; font-size: 16px;
+      text-decoration: none; letter-spacing: .3px;
+      box-shadow: 0 10px 28px rgba(184,137,30,.28); transition: all 0.25s ease;
+    }
+    .mba-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(184,137,30,.38); }
+
+    .mba-list-header { font-size: 14px; font-weight: 700; color: #7a5f18; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; }
+    .mba-list { list-style: none; display: flex; flex-direction: column; }
+    .mba-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      font-size: 13px; line-height: 1.6; color: #333;
+      padding: 16px 0; border-bottom: 1px solid rgba(180,140,40,0.12);
+    }
+    .mba-list li:last-child { border-bottom: none; }
+    .mba-list li svg { flex-shrink: 0; margin-top: 3px; }
+
+    /* ---- CTA / INSCRICAO ---- */
+    .cta-section {
+      position: relative; padding: 110px 20px 95px;
+      background: var(--bg-dark); overflow: hidden;
+    }
+    .cta-section::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(254,183,55,0.08), transparent 50%);
+      pointer-events: none;
+    }
+    .cta-inner { max-width: 600px; margin: 0 auto; position: relative; z-index: 2; text-align: center; }
+    .cta-title { font-size: clamp(24px,3.2vw,42px); line-height: 1.08; font-weight: 700; letter-spacing: -0.025em; color: var(--white); margin-bottom: 14px; }
+    .cta-title .hl { color: var(--yellow); }
+    .cta-subtitle { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.58); margin-bottom: 40px; }
+
+    .form-panel {
+      text-align: left; position: relative; border-radius: 24px; padding: 36px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 24px 56px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px); overflow: hidden;
+    }
+    .form-panel::before {
+      content: ""; position: absolute; top: 0; left: 26px; right: 26px; height: 2px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(to right, rgba(254,183,55,0), rgba(254,183,55,.95), rgba(254,183,55,0));
+      box-shadow: 0 0 24px rgba(254,183,55,.3);
+    }
+    .form-panel h3 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 5px; }
+    .form-panel > p { font-size: 13px; color: var(--text-faint); margin-bottom: 24px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; letter-spacing: .04em; text-transform: uppercase; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 12px 16px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 15px;
+      color: var(--white); outline: none; transition: border-color 0.2s, background 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--yellow); background: rgba(255,255,255,.08); }
+    .form-group input::placeholder { color: rgba(255,255,255,.28); }
+    .form-group select option { background: #1a1a1a; color: var(--white); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-form {
+      width: 100%; margin-top: 4px;
+      background: linear-gradient(135deg, var(--yellow-light), var(--yellow));
+      color: #000; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 16px;
+      padding: 16px; border: none; border-radius: var(--radius-sm); cursor: pointer;
+      letter-spacing: .3px; box-shadow: 0 10px 28px rgba(254,183,55,.3); transition: all 0.25s ease;
+    }
+    .btn-form:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(254,183,55,.4); }
+    .form-privacy { font-size: 11px; color: var(--text-faint); margin-top: 12px; text-align: center; }
+
+    /* ── REGISTER SECTION ── */
+    .register-section {
+      position: relative;
+      padding: 120px 72px;
+      background:
+        radial-gradient(ellipse at 5% 40%, rgba(254,183,55,0.09), transparent 36%),
+        radial-gradient(ellipse at 95% 70%, rgba(254,183,55,0.05), transparent 30%),
+        linear-gradient(180deg, #090909 0%, #080808 100%);
+      border-top: 1px solid rgba(254,183,55,0.1);
+    }
+
+    .register-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .register-copy { padding-top: 12px; }
+
+    .reg-headline {
+      font-size: clamp(18px, 2vw, 28px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .reg-headline em {
+      font-style: normal;
+      background: linear-gradient(90deg, #FEB737, #FFCF6B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .reg-sub {
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.44);
+      margin-bottom: 36px;
+      max-width: 420px;
+    }
+
+    .reg-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .reg-bullets li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .reg-bullets li::before {
+      content: '';
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: rgba(254,183,55,0.12);
+      border: 1px solid rgba(254,183,55,0.48);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 5L4 7.5L8.5 2' stroke='%23FEB737' stroke-width='1.45' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-size: 9px 9px;
+      background-position: center;
+      background-repeat: no-repeat;
+      flex-shrink: 0;
+    }
+
+    .reg-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: rgba(254,183,55,0.07);
+      border: 1px solid rgba(254,183,55,0.18);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--yellow);
+      letter-spacing: 0.04em;
+    }
+
+    .form-card {
+      position: relative;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(254,183,55,0.16);
+      border-radius: 24px;
+      padding: 40px 36px;
+      overflow: hidden;
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 36px; right: 36px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+      border-radius: 100px;
+    }
+
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field label,
+    .radio-label-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.42);
+    }
+
+    .field label span,
+    .radio-label-title span {
+      color: var(--yellow);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .field input::placeholder { color: rgba(255,255,255,0.22); }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: rgba(254,183,55,0.55);
+      box-shadow: 0 0 0 3px rgba(254,183,55,0.1);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .field input.error,
+    .field select.error {
+      border-color: rgba(239,68,68,0.6);
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+    }
+
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.35)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+      cursor: pointer;
+    }
+
+    .field select option { background: #111; color: #fff; }
+
+    .phone-row { display: flex; }
+
+    .phone-prefix {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .phone-row input { border-radius: 0 12px 12px 0 !important; }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .radio-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .radio-options.col { flex-direction: column; }
+
+    .radio-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.03);
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      user-select: none;
+    }
+
+    .radio-option:hover {
+      border-color: rgba(254,183,55,0.3);
+      color: rgba(255,255,255,0.85);
+      background: rgba(254,183,55,0.06);
+    }
+
+    .radio-option input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      background: transparent;
+      flex-shrink: 0;
+      transition: all 0.18s ease;
+      margin: 0;
+    }
+
+    .radio-option input[type="radio"]:checked {
+      border-color: var(--yellow);
+      background: var(--yellow);
+      box-shadow: 0 0 0 3px rgba(254,183,55,0.18);
+    }
+
+    .radio-option:has(input:checked) {
+      border-color: rgba(254,183,55,0.45);
+      background: rgba(254,183,55,0.1);
+      color: var(--yellow);
+    }
+
+    .form-consent {
+      font-size: 12px;
+      color: rgba(255,255,255,0.28);
+      line-height: 1.65;
+    }
+
+    .msg-box {
+      display: none;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .msg-box.success {
+      display: block;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #86efac;
+    }
+
+    .msg-box.error {
+      display: block;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.28);
+      color: #fca5a5;
+    }
+
+    .submit-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--yellow);
+      color: #000;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 18px 28px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 12px 36px rgba(254,183,55,0.2), inset 0 1px 0 rgba(255,255,255,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+      letter-spacing: -0.01em;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+      box-shadow: 0 18px 48px rgba(254,183,55,0.32), inset 0 1px 0 rgba(255,255,255,0.38);
+    }
+
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    @media (max-width: 1050px) {
+      .register-section { padding: 100px 48px; }
+      .register-wrap { gap: 56px; }
+    }
+
+    @media (max-width: 900px) {
+      .register-section { padding: 88px 30px; }
+      .register-wrap { grid-template-columns: 1fr; gap: 48px; }
+      .reg-sub { max-width: 100%; }
+    }
+
+    @media (max-width: 600px) {
+      .form-card { padding: 32px 30px; }
+    }
+
+    @media (max-width: 480px) {
+      .register-section { padding: 72px 30px; }
+      .form-card { padding: 28px 25px; }
+    }
+
+    /* ---- FOOTER ---- */
+    .footer-section {
+      padding: 44px 20px 48px;
+      background: linear-gradient(180deg, var(--bg-dark), #101010);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .footer-content { display: flex; flex-direction: column; align-items: center; gap: 22px; text-align: center; }
+    .footer-logo { max-width: 200px; height: auto; opacity: .9; }
+    .footer-contact { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,.82); font-weight: 500; }
+    .footer-contact a { color: var(--white); text-decoration: underline; text-underline-offset: 3px; }
+    .footer-contact a:hover { color: var(--yellow); }
+    .footer-legal { font-size: 12px; color: rgba(255,255,255,.28); line-height: 1.6; }
+
+    /* ---- SCROLL REVEAL ---- */
+    .fade-up { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s} .d4{transition-delay:.4s}
+
+    /* ---- RESPONSIVE TABLET ---- */
+    @media (max-width: 1000px) {
+      .why-split { grid-template-columns: 1fr; gap: 40px; }
+      .reasons-wrap { grid-template-columns: 1fr; gap: 32px; }
+      .reasons-copy { max-width: 100%; }
+      .speaker-body { grid-template-columns: 1fr; gap: 32px; }
+      .mba-split { grid-template-columns: 1fr; gap: 40px; }
+    }
+    @media (max-width: 900px) {
+      h1 { font-size: 28px; }
+      .section-title { font-size: 22px; }
+      .diff-strip-inner { grid-template-columns: repeat(2, 1fr); }
+      .diff-item:nth-child(2) { border-right: 0; }
+      .diff-item:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.06); }
+      .pq-card { flex: 0 0 80vw; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    /* ---- RESPONSIVE MOBILE ---- */
+    @media (max-width: 600px) {
+      #main-header { padding: 18px 20px 0; }
+      #main-header.scrolled { padding: 12px 20px; }
+      .hero-logo { height: 36px; }
+      #main-header .hero-btn { display: none; }
+      #hero { padding: 120px 23px 60px; min-height: auto; }
+      h1 { font-size: 23px; line-height: 1.12; }
+      .hero-sub { font-size: 13px; margin-bottom: 22px; }
+      .event-info-row { gap: 10px; flex-direction: column; align-items: flex-start; }
+      .event-info-sep { display: none; }
+      .lp-section { padding: 64px 23px 52px; }
+      #section-mba { padding: 64px 23px; }
+      .reasons-title { font-size: 22px; }
+      .why-claim { font-size: 16px; }
+      .diff-strip-inner { grid-template-columns: 1fr; }
+      .diff-item { border-right: 0; border-bottom: 1px solid rgba(255,255,255,.06); min-height: auto; }
+      .diff-item:last-child { border-bottom: 0; }
+      .cta-section { padding: 72px 23px 60px; }
+      .form-panel { padding: 26px 23px; }
+      .mba-title { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- HEADER -->
+<header id="main-header">
+  <div class="container">
+    <img src="https://www.fundace.org.br/assets/lp/images/gepos/logo.png" alt="Fundace FEA-RP USP" class="hero-logo">
+    <a href="#inscricao" class="hero-btn" style="padding:12px 24px;font-size:14px;">Garantir Minha Vaga</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-fade"></div>
+  <div class="container">
+    <div class="hero-copy">
+      <div class="event-badge">Palestra Gratuita &middot; Pré-MBA USP</div>
+      <p class="hero-program-sub">Pré-MBA em Gestão Comercial e Salestech</p>
+      <h1>Tendências de <span class="hl">vendas B2B</span> e o novo perfil do comprador organizacional</h1>
+      <p class="hero-sub">Entenda como o comportamento de compra mudou e o que você precisa fazer para vender melhor em um cenário cada vez mais estratégico e orientado por dados.</p>
+      <div class="event-info-row">
+        <div class="event-info-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          23 de maio de 2025
+        </div>
+        <div class="event-info-sep"></div>
+        <div class="event-info-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Das 9h às 11h
+        </div>
+        <div class="event-info-sep"></div>
+        <div class="event-info-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Anfiteatro FEA-RP/USP
+        </div>
+      </div>
+      <a href="#inscricao" class="hero-btn">Garantir Minha Vaga — É Gratuito</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- POR QUE PARTICIPAR: layout dividido -->
+<section class="lp-section">
+  <div class="container">
+    <div class="why-split">
+      <div class="why-left fade-up">
+        <div class="section-tag">Por que participar</div>
+        <h2 class="section-title">O processo de vendas B2B mudou e <span class="hl">continua evoluindo</span></h2>
+        <p class="why-claim">Quem não acompanha essas mudanças,<br>perde relevância.</p>
+        <a href="#inscricao" class="hero-btn">Garantir minha vaga gratuita</a>
+      </div>
+      <div class="why-right fade-up d2">
+        <p class="why-right-intro">Hoje, o comprador organizacional chegou a um novo nível de sofisticação. O processo de vendas B2B mudou e continua evoluindo rapidamente. Hoje, o comprador:</p>
+        <ul class="buyer-list">
+          <li><span class="buyer-dot"></span>Está mais informado</li>
+          <li><span class="buyer-dot"></span>Compara mais opções</li>
+          <li><span class="buyer-dot"></span>Exige mais valor e personalização</li>
+          <li><span class="buyer-dot"></span>Participa de decisões mais complexas e coletivas</li>
+        </ul>
+        <p class="why-outro">Nesta palestra, você vai entender como se adaptar a esse novo cenário e como transformar essas mudanças em vantagem competitiva.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE O QUE A PALESTRA VAI FALAR: reasons list -->
+<section class="lp-section sec-black">
+  <div class="container">
+    <div class="reasons-wrap">
+      <div class="reasons-copy fade-up">
+        <div class="section-tag">Conteúdo</div>
+        <h2 class="reasons-title">Sobre o que a palestra <span class="hl">vai falar</span></h2>
+        <p class="reasons-desc">Dois horas de conteúdo denso, aplicado e sem enrolação — do panorama ao plano de ação.</p>
+      </div>
+      <div class="fade-up d2">
+        <div class="reason-item">
+          <div class="reason-number">01</div>
+          <div class="reason-content">
+            <div class="reason-title">As principais tendências em vendas B2B</div>
+            <p class="reason-text">Um panorama objetivo do que está mudando e quais movimentos já acontecem nas organizações mais competitivas.</p>
+          </div>
+        </div>
+        <div class="reason-item">
+          <div class="reason-number">02</div>
+          <div class="reason-content">
+            <div class="reason-title">Como o perfil do comprador organizacional está mudando</div>
+            <p class="reason-text">Comportamento, expectativas e processo de decisão do comprador B2B — o que mudou e o que vem pela frente.</p>
+          </div>
+        </div>
+        <div class="reason-item">
+          <div class="reason-number">03</div>
+          <div class="reason-content">
+            <div class="reason-title">O impacto da informação e da tecnologia no processo de decisão</div>
+            <p class="reason-text">Como dados, automação e ferramentas digitais transformam a compra — e o que isso significa para quem vende.</p>
+          </div>
+        </div>
+        <div class="reason-item">
+          <div class="reason-number">04</div>
+          <div class="reason-content">
+            <div class="reason-title">Como empresas estão se posicionando em mercados mais competitivos</div>
+            <p class="reason-text">Exemplos práticos de organizações que adaptaram suas estratégias comerciais para ganhar relevância e eficiência.</p>
+          </div>
+        </div>
+        <div class="reason-item">
+          <div class="reason-number">05</div>
+          <div class="reason-content">
+            <div class="reason-title">Caminhos práticos para adaptar sua estratégia comercial</div>
+            <p class="reason-text">Saídas concretas e aplicáveis para você começar a ajustar sua atuação já na semana seguinte à palestra.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARA QUEM É -->
+<section class="lp-section">
+  <div class="container">
+    <div class="pq-header fade-up">
+      <div class="section-tag">Para quem é</div>
+      <h2 class="section-title">Esta palestra é para <span class="hl">você</span></h2>
+      <p style="font-size:17px;line-height:1.7;color:var(--text-muted);max-width:540px;margin-top:4px;">Se você se identifica com algum destes perfis, reserve sua vaga.</p>
+    </div>
+    <div class="pq-scroll-outer fade-up">
+      <div class="pq-scroll">
+        <div class="pq-card">
+          <h3>Profissional de comercial, vendas, marketing ou negócios</h3>
+          <p>Que quer atualizar sua visão e abordagem para um mercado cada vez mais exigente.</p>
+        </div>
+        <div class="pq-card">
+          <h3>Quem trabalha com vendas B2B ou relacionamento com empresas</h3>
+          <p>E precisa entender como o processo de decisão do cliente organizacional está mudando.</p>
+        </div>
+        <div class="pq-card">
+          <h3>Quem quer evoluir sua atuação estratégica e gerar mais resultado</h3>
+          <p>Sair do operacional para influenciar decisões com base em análise de mercado e dados.</p>
+        </div>
+        <div class="pq-card">
+          <h3>Quem precisa entender melhor o comportamento do cliente organizacional</h3>
+          <p>Para construir abordagens mais assertivas e conectadas às necessidades reais do comprador.</p>
+        </div>
+        <div class="pq-card">
+          <h3>Quem busca crescimento profissional em áreas comerciais</h3>
+          <p>E quer entender os próximos passos para ampliar sua atuação e abrir novas oportunidades de carreira.</p>
+        </div>
+      </div>
+    </div>
+    <div class="prereq-notice fade-up d2">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p><strong>Pré-requisito:</strong> graduação completa em qualquer área.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE O PALESTRANTE -->
+<section class="lp-section sec-black">
+  <div class="container">
+    <div class="speaker-header fade-up">
+      <div class="section-tag">Sobre o palestrante</div>
+      <h2 class="section-title">Quem vai conduzir <span class="hl">a palestra</span></h2>
+    </div>
+    <div class="speaker-body">
+      <div class="speaker-card fade-up">
+        <div class="speaker-photo-wrap">
+          <!--
+            FOTO DO PALESTRANTE
+            Quando tiver a imagem, substitua pelo código abaixo
+            e remova o bloco .speaker-photo-placeholder:
+
+            <img
+              src="foto-jose-carlos.jpg"
+              alt="Prof. Dr. José Carlos De Lima Júnior"
+              class="speaker-photo"
+            >
+          -->
+          <img
+            src="IMG_9476.JPG"
+            alt="Prof. Dr. José Carlos De Lima Júnior"
+            class="speaker-photo"
+          >
+        </div>
+        <div class="speaker-card-info">
+          <h3 class="speaker-name">Prof. Dr. José Carlos De Lima Júnior</h3>
+          <p class="speaker-role">Especialista em estratégia, competição<br>e estruturas de mercado</p>
+        </div>
+      </div>
+      <div class="fade-up d2">
+        <p class="speaker-intro">Referência nacional em estratégia e competição de mercados, com trajetória que une rigor acadêmico e aplicação prática em projetos reais de alto impacto.</p>
+        <div class="cred-list">
+          <div class="cred-item">
+            <div class="cred-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="1.5"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div class="cred-text">
+              <strong>Sócio-diretor na Markestrat Group</strong>
+              Lidera projetos estratégicos que conectam universidade, empresas e mercado.
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+            </div>
+            <div class="cred-text">
+              <strong>Cofundador da Harven Agribusiness School</strong>
+              Referência em educação executiva para o agronegócio.
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div class="cred-text">
+              <strong>Doutor pela FEA/USP</strong>
+              Professor e coordenador em programas de pós-graduação.
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+            </div>
+            <div class="cred-text">
+              <strong>Palestrante reconhecido</strong>
+              Por transformar análises econômicas complexas em estratégias práticas e aplicáveis.
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>
+            </div>
+            <div class="cred-text">
+              <strong>Colunista na Rádio CBN</strong>
+              Fonte frequente na imprensa nacional e internacional sobre estratégia e mercados.
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#feb737" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div class="cred-text">
+              <strong>Coautor de 11 livros</strong>
+              Publicações no Brasil e no exterior sobre estratégia, competição e estruturas de mercado.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE O MBA: off-white, split -->
+<section class="lp-section" id="section-mba">
+  <div class="container">
+    <div class="mba-split">
+      <div class="fade-up">
+        <div class="mba-tag">Pré-MBA USP &middot; Gestão Comercial e Salestech</div>
+        <h2 class="mba-title">Essa palestra é o começo.<br>O MBA é o <span class="hl">próximo passo.</span></h2>
+        <p class="mba-intro-text">A palestra faz parte do ciclo Pré-MBA USP em Gestão Comercial e Salestech. Ela é uma introdução a temas que serão aprofundados ao longo do programa.</p>
+        <p class="mba-closing">Se essa palestra já amplia sua visão, o MBA é o próximo passo para transformar esse conhecimento em crescimento real na sua carreira.</p>
+        <a href="#inscricao" class="mba-btn">Garantir minha vaga na palestra &#8594;</a>
+      </div>
+      <div class="fade-up d2">
+        <p class="mba-list-header">No MBA, você desenvolve competências para:</p>
+        <ul class="mba-list">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8891e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Estruturar estratégias comerciais mais eficientes
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8891e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Entender profundamente o comportamento do cliente
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8891e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Utilizar dados e tecnologia para melhorar a performance de vendas
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8891e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Atuar em mercados mais competitivos e complexos
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8891e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Tomar decisões com mais segurança e visão de negócio
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8891e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Melhorar a performance do funil, gerar leads mais qualificados e aumentar a eficiência de aquisição
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8891e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Reduzir a dependência de ações pontuais da equipe comercial, ganhar previsibilidade e escalar resultados
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSCRICAO -->
+<section class="register-section" id="inscricao">
+  <div class="register-wrap">
+
+    <!-- Copy left -->
+    <div class="register-copy">
+      <span class="section-tag">Inscrições abertas</span>
+      <h2 class="reg-headline">Garanta sua vaga <em>gratuitamente</em></h2>
+      <p class="reg-sub">Preencha o formulário e você receberá um <strong style="color:rgba(255,255,255,0.75)">e-mail de confirmação</strong> com todos os detalhes do evento.</p>
+      <ul class="reg-bullets">
+        <li>100% gratuito</li>
+        <li>23 de Maio — 9h às 11h</li>
+        <li>Anfiteatro FEA-RP/USP</li>
+        <li>Confirmação enviada por e-mail</li>
+      </ul>
+      <div class="reg-badge">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1l1.8 3.9L13 5.5l-3 2.9.7 4.1L7 10.5l-4.7 2.1.7-4.1-3-2.9 4.2-.6L7 1z" fill="#FEB737"/>
+        </svg>
+        Vagas limitadas
+      </div>
+    </div>
+
+    <!-- Form right -->
+    <div class="register-form-col">
+      <div class="form-card">
+        <form id="register-form" class="form-grid" novalidate>
+
+          <div class="radio-group">
+            <div class="radio-label-title">Possui formação superior? <span>*</span></div>
+            <div class="radio-options">
+              <label class="radio-option"><input type="radio" name="formacao_superior" value="sim" required> Sim</label>
+              <label class="radio-option"><input type="radio" name="formacao_superior" value="nao"> Não</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="nome">Nome completo <span>*</span></label>
+            <input id="nome" type="text" placeholder="Digite seu nome completo" required>
+          </div>
+
+          <div class="field">
+            <label for="email">E-mail <span>*</span></label>
+            <input id="email" type="email" placeholder="seu@email.com" required>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="cidade">Cidade</label>
+              <input id="cidade" type="text" placeholder="Sua cidade">
+            </div>
+            <div class="field">
+              <label for="telefone">Telefone <span>*</span></label>
+              <div class="phone-row">
+                <div class="phone-prefix">🇧🇷 +55</div>
+                <input id="telefone" type="tel" placeholder="11 96123-4567" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="area_formacao">Área de formação <span>*</span></label>
+            <select id="area_formacao" required>
+              <option value="" disabled selected>Selecione sua área</option>
+              <option>Comercial / Vendas</option>
+              <option>Marketing</option>
+              <option>Negócios / Gestão</option>
+              <option>Administração</option>
+              <option>Economia</option>
+              <option>Engenharia</option>
+              <option>Outra</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="empresa">Empresa <span>*</span></label>
+              <input id="empresa" type="text" placeholder="Nome da empresa" required>
+            </div>
+            <div class="field">
+              <label for="cargo">Cargo <span>*</span></label>
+              <input id="cargo" type="text" placeholder="Seu cargo atual" required>
+            </div>
+          </div>
+
+          <div class="radio-group">
+            <div class="radio-label-title">Pretende fazer uma pós-graduação ou MBA? <span>*</span></div>
+            <div class="radio-options col">
+              <label class="radio-option"><input type="radio" name="pretende_pos" value="sim_agora" required> Sim, imediatamente</label>
+              <label class="radio-option"><input type="radio" name="pretende_pos" value="sim_depois"> Sim, mas não agora</label>
+              <label class="radio-option"><input type="radio" name="pretende_pos" value="nao"> Não</label>
+            </div>
+          </div>
+
+          <p class="form-consent">Após o envio, você receberá um <strong style="color:rgba(255,255,255,0.45)">e-mail de confirmação</strong> com as instruções para o dia do evento. Ao se inscrever, você concorda em receber comunicações da Fundace/USP.</p>
+
+          <div class="msg-box" id="msg-box"></div>
+
+          <button type="submit" class="submit-btn" id="submit-btn">
+            Confirmar minha inscrição gratuita
+            <span>→</span>
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer-section">
+  <div class="container">
+    <div class="footer-content">
+      <p class="footer-contact">
+        <a href="mailto:atendimento@fundace.org.br">atendimento@fundace.org.br</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+    document.getElementById('progress-bar').style.width = (p * 100) + '%';
+  });
+
+  const hdr = document.getElementById('main-header');
+  window.addEventListener('scroll', () => hdr.classList.toggle('scrolled', window.scrollY > 80));
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  // drag-to-scroll nos cards
+  const pqScroll = document.querySelector('.pq-scroll');
+  if (pqScroll) {
+    let isDown = false, startX, scrollLeft;
+    pqScroll.addEventListener('mousedown', e => {
+      isDown = true; startX = e.pageX - pqScroll.offsetLeft; scrollLeft = pqScroll.scrollLeft;
+    });
+    pqScroll.addEventListener('mouseleave', () => { isDown = false; });
+    pqScroll.addEventListener('mouseup', () => { isDown = false; });
+    pqScroll.addEventListener('mousemove', e => {
+      if (!isDown) return;
+      e.preventDefault();
+      pqScroll.scrollLeft = scrollLeft - (e.pageX - pqScroll.offsetLeft - startX) * 1.4;
+    });
+  }
+</script>
+
+<!-- Script para integração com Supabase -->
+<script src="js/form-supabase-cdn.js?v=3"></script>
+
+</body>
+</html>
