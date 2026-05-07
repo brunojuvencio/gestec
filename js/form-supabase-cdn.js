@@ -2,6 +2,7 @@ const SUPABASE_URL = 'https://hasptpxcyavfdzxtwpws.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhc3B0cHhjeWF2ZmR6eHR3cHdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDA2MTYsImV4cCI6MjA5MTY3NjYxNn0.5TTFlqGtVl9AqWDzPTylquWRB1QdP1YXxPQRGfu5B68';
 const TABLE_NAME = 'inscricoes_vendas';
 const META_CAPI_ENDPOINT = '/api/meta-capi';
+const GOOGLE_ADS_SEND_TO = 'AW-11029855018/nAueCJfnm6kcELC-ntED';
 
 const hasPlaceholder =
   SUPABASE_URL === 'https://seu-projeto.supabase.co' ||
@@ -120,6 +121,32 @@ async function trackMetaEvent(eventName, formData) {
     console.warn('Meta CAPI tracking indisponivel:', error);
     return null;
   }
+}
+
+function trackGoogleLead(formData) {
+  if (typeof window.gtag !== 'function') {
+    console.warn('Google Ads tracking indisponivel: gtag nao carregou.');
+    return;
+  }
+
+  const customData = getMetaCustomData(formData);
+
+  window.gtag('event', 'conversion', {
+    send_to: GOOGLE_ADS_SEND_TO,
+    event_category: 'lead',
+    event_label: 'pre-mba-salestech',
+    formacao_superior: customData.formacao_superior,
+    tem_graduacao: customData.tem_graduacao,
+    pretende_pos: customData.pretende_pos,
+    urgencia_mba: customData.urgencia_mba,
+    quer_comecar_agora: customData.quer_comecar_agora,
+    origem: customData.origem,
+    utm_source: customData.utm_source,
+    utm_medium: customData.utm_medium,
+    utm_campaign: customData.utm_campaign,
+    utm_term: customData.utm_term,
+    utm_content: customData.utm_content,
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -261,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       setMsg('success', 'Inscricao confirmada! Verifique seu email para os proximos passos.');
       trackMetaEvent('Lead', formData);
+      trackGoogleLead(formData);
       btn.disabled = true;
       btn.innerHTML = 'Inscricao realizada';
       form.reset();
