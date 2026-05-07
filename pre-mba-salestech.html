@@ -105,7 +105,13 @@
       background: linear-gradient(to bottom, transparent, rgba(5,5,5,0.5) 58%, #0c0c0c);
       pointer-events: none; z-index: 3;
     }
-    .hero-copy { max-width: 760px; position: relative; z-index: 2; }
+    .hero-grain {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay; opacity: 0.13;
+    }
+    .hero-copy { max-width: 760px; position: relative; z-index: 2; isolation: isolate; }
+    #hero .hero-btn { display: block; width: fit-content; margin: 0 auto; }
 
     .event-badge {
       display: inline-flex; align-items: center; gap: 8px;
@@ -217,17 +223,12 @@
     .diff-copy span { color: rgba(255,255,255,.52); font-size: 12px; line-height: 1.4; }
 
     /* ---- POR QUE PARTICIPAR: split ---- */
-    .why-split { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+    .why-split { display: flex; flex-direction: column; gap: 20px; max-width: 720px; }
     .why-left .section-tag { display: inline-flex; }
-    .why-claim {
-      font-size: 17px; font-weight: 400; line-height: 1.65;
-      color: rgba(255,255,255,0.72);
-      margin: 24px 0 32px; font-style: italic;
-    }
     .why-right-intro {
       font-size: 14px; line-height: 1.65; color: var(--text-muted); margin-bottom: 22px;
     }
-    .buyer-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-bottom: 26px; }
+    .buyer-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-bottom: 48px; }
     .buyer-list li {
       display: flex; align-items: center; gap: 14px;
       font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.88);
@@ -834,7 +835,7 @@
 
     /* ---- RESPONSIVE TABLET ---- */
     @media (max-width: 1000px) {
-      .why-split { grid-template-columns: 1fr; gap: 40px; }
+
       .reasons-wrap { grid-template-columns: 1fr; gap: 32px; }
       .reasons-copy { max-width: 100%; }
       .speaker-body { grid-template-columns: 1fr; gap: 32px; }
@@ -888,6 +889,7 @@
 
 <!-- HERO -->
 <section id="hero">
+  <div class="hero-grain"></div>
   <div class="hero-fade"></div>
   <div class="container">
     <div class="hero-copy">
@@ -911,7 +913,7 @@
           Anfiteatro FEA-RP/USP
         </div>
       </div>
-      <a href="#inscricao" class="hero-btn">Garantir Minha Vaga — É Gratuito</a>
+      <a href="#inscricao" class="hero-btn">Garantir Minha Vaga</a>
     </div>
   </div>
 </section>
@@ -924,8 +926,6 @@
       <div class="why-left fade-up">
         <div class="section-tag">Por que participar</div>
         <h2 class="section-title">O processo de vendas B2B mudou e <span class="hl">continua evoluindo</span></h2>
-        <p class="why-claim">Quem não acompanha essas mudanças,<br>perde relevância.</p>
-        <a href="#inscricao" class="hero-btn">Garantir minha vaga gratuita</a>
       </div>
       <div class="why-right fade-up d2">
         <p class="why-right-intro">Hoje, o comprador organizacional chegou a um novo nível de sofisticação. O processo de vendas B2B mudou e continua evoluindo rapidamente. Hoje, o comprador:</p>
@@ -1326,7 +1326,7 @@
 </script>
 
 <!-- Script para integração com Supabase -->
-<script src="js/form-supabase-cdn.js?v=3"></script>
+<script src="js/form-supabase-cdn.js?v=4"></script>
 
 </body>
 </html>

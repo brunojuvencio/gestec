@@ -1,6 +1,7 @@
 const SUPABASE_URL = 'https://hasptpxcyavfdzxtwpws.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhc3B0cHhjeWF2ZmR6eHR3cHdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDA2MTYsImV4cCI6MjA5MTY3NjYxNn0.5TTFlqGtVl9AqWDzPTylquWRB1QdP1YXxPQRGfu5B68';
 const TABLE_NAME = 'inscricoes_vendas';
+const META_CAPI_ENDPOINT = '/api/meta-capi';
 
 const hasPlaceholder =
   SUPABASE_URL === 'https://seu-projeto.supabase.co' ||
@@ -9,7 +10,121 @@ const hasPlaceholder =
 const isConfigured = !hasPlaceholder;
 const isPublishableKey = SUPABASE_ANON_KEY.indexOf('sb_publishable_') === 0;
 
+function getQueryParam(name) {
+  return new URLSearchParams(window.location.search).get(name) || null;
+}
+
+function getCookie(name) {
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = document.cookie.match(new RegExp('(?:^|; )' + escapedName + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function setCookie(name, value, days) {
+  const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/; SameSite=Lax' + secure;
+}
+
+function randomInt() {
+  if (window.crypto && window.crypto.getRandomValues) {
+    const values = new Uint32Array(1);
+    window.crypto.getRandomValues(values);
+    return values[0];
+  }
+
+  return Math.floor(Math.random() * 2147483647);
+}
+
+function ensureFbp() {
+  const existingFbp = getCookie('_fbp');
+  if (existingFbp) return existingFbp;
+
+  const fbp = 'fb.1.' + Date.now() + '.' + randomInt();
+  setCookie('_fbp', fbp, 90);
+  return fbp;
+}
+
+function ensureFbc() {
+  const existingFbc = getCookie('_fbc');
+  if (existingFbc) return existingFbc;
+
+  const fbclid = getQueryParam('fbclid');
+  if (!fbclid) return null;
+
+  const fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+  setCookie('_fbc', fbc, 90);
+  return fbc;
+}
+
+function createMetaEventId(eventName) {
+  const randomPart =
+    window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : Date.now() + '-' + randomInt();
+  return eventName.toLowerCase() + '-' + randomPart;
+}
+
+function getMetaCustomData(formData) {
+  const pretendePos = formData ? formData.pretende_pos : null;
+  const formacaoSuperior = formData ? formData.formacao_superior : null;
+
+  return {
+    origem: 'pre-mba-salestech',
+    page_title: document.title,
+    page_location: window.location.href,
+    referrer: document.referrer || null,
+    formacao_superior: formacaoSuperior || 'nao_informado',
+    tem_graduacao: formacaoSuperior || 'nao_informado',
+    pretende_pos: pretendePos || 'nao_informado',
+    urgencia_mba: pretendePos === 'sim_agora' ? 'quer_comecar_agora' : pretendePos || 'nao_informado',
+    quer_comecar_agora: pretendePos ? (pretendePos === 'sim_agora' ? 'sim' : 'nao') : 'nao_informado',
+    utm_source: getQueryParam('utm_source'),
+    utm_medium: getQueryParam('utm_medium'),
+    utm_campaign: getQueryParam('utm_campaign'),
+    utm_term: getQueryParam('utm_term'),
+    utm_content: getQueryParam('utm_content'),
+  };
+}
+
+async function trackMetaEvent(eventName, formData) {
+  try {
+    const response = await fetch(META_CAPI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: eventName === 'PageView',
+      body: JSON.stringify({
+        event_name: eventName,
+        event_id: createMetaEventId(eventName),
+        event_source_url: window.location.href,
+        user_data: {
+          fbp: ensureFbp(),
+          fbc: ensureFbc(),
+          nome: formData ? formData.nome : null,
+          email: formData ? formData.email : null,
+          telefone: formData ? formData.telefone : null,
+          cidade: formData ? formData.cidade : null,
+        },
+        custom_data: getMetaCustomData(formData),
+      }),
+    });
+
+    const result = await response.json().catch(function () {
+      return null;
+    });
+
+    if (!response.ok || (result && result.ok === false && !result.skipped)) {
+      console.warn('Meta CAPI tracking nao confirmado:', result || response.status);
+    }
+
+    return result;
+  } catch (error) {
+    console.warn('Meta CAPI tracking indisponivel:', error);
+    return null;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+  trackMetaEvent('PageView', null);
+
   const form = document.getElementById('register-form');
   const btn = document.getElementById('submit-btn');
   const msg = document.getElementById('msg-box');
@@ -86,10 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return field ? field.value.trim() : '';
   }
 
-  function getQueryParam(name) {
-    return new URLSearchParams(window.location.search).get(name) || null;
-  }
-
   function getFormData() {
     return {
       formacao_superior: form.querySelector('input[name="formacao_superior"]:checked').value,
@@ -131,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setButtonLoading(true);
 
     try {
+      const formData = getFormData();
       const response = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE_NAME, {
         method: 'POST',
         headers: {
@@ -139,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
           'Content-Type': 'application/json',
           Prefer: 'return=minimal',
         },
-        body: JSON.stringify(getFormData()),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -148,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       setMsg('success', 'Inscricao confirmada! Verifique seu email para os proximos passos.');
+      trackMetaEvent('Lead', formData);
       btn.disabled = true;
       btn.innerHTML = 'Inscricao realizada';
       form.reset();
