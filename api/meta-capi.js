@@ -2,7 +2,6 @@ const crypto = require('crypto');
 
 const ALLOWED_EVENTS = new Set(['PageView', 'Lead']);
 const DEFAULT_GRAPH_VERSION = 'v23.0';
-const DEFAULT_ORIGIN = 'pre-mba-salestech';
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -39,9 +38,9 @@ module.exports = async function handler(req, res) {
     }
 
     const eventId = cleanString(body.event_id) || createEventId(eventName);
-    const customData = buildCustomData(eventName, body.custom_data || {});
+    const customData = buildCustomData(body.custom_data || {});
     const userData = buildUserData(body.user_data || {}, req);
-    const eventSourceUrl = cleanUrl(body.event_source_url || customData.page_location);
+    const eventSourceUrl = cleanUrl(body.event_source_url);
 
     const payload = {
       data: [
@@ -90,29 +89,17 @@ module.exports = async function handler(req, res) {
   }
 };
 
-function buildCustomData(eventName, data) {
+function buildCustomData(data) {
   const formacaoSuperior = normalizeChoice(data.formacao_superior || data.tem_graduacao);
   const pretendePos = normalizeChoice(data.pretende_pos || data.urgencia_mba);
-  const querComecarAgora = pretendePos === 'sim_agora' ? 'sim' : pretendePos ? 'nao' : 'nao_informado';
+  const querComecarAgora = pretendePos ? (pretendePos === 'sim_agora' ? 'sim' : 'nao') : '';
 
   return removeEmpty({
-    content_name: 'Pre-MBA USP Gestao Comercial e Salestech',
-    content_category: 'lead_generation',
-    event_type: eventName,
-    origem: cleanString(data.origem) || DEFAULT_ORIGIN,
-    page_title: cleanString(data.page_title),
-    page_location: cleanUrl(data.page_location),
-    referrer: cleanUrl(data.referrer),
-    formacao_superior: formacaoSuperior || 'nao_informado',
-    tem_graduacao: formacaoSuperior || 'nao_informado',
-    pretende_pos: pretendePos || 'nao_informado',
-    urgencia_mba: mapUrgency(pretendePos),
+    formacao_superior: formacaoSuperior,
+    tem_graduacao: formacaoSuperior,
+    pretende_pos: pretendePos,
+    urgencia_mba: pretendePos ? mapUrgency(pretendePos) : '',
     quer_comecar_agora: querComecarAgora,
-    utm_source: cleanString(data.utm_source),
-    utm_medium: cleanString(data.utm_medium),
-    utm_campaign: cleanString(data.utm_campaign),
-    utm_term: cleanString(data.utm_term),
-    utm_content: cleanString(data.utm_content),
   });
 }
 

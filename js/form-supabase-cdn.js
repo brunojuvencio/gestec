@@ -64,25 +64,18 @@ function createMetaEventId(eventName) {
   return eventName.toLowerCase() + '-' + randomPart;
 }
 
-function getMetaCustomData(formData) {
+function getLeadAnswerData(formData) {
+  if (!formData) return {};
+
   const pretendePos = formData ? formData.pretende_pos : null;
   const formacaoSuperior = formData ? formData.formacao_superior : null;
 
   return {
-    origem: 'pre-mba-salestech',
-    page_title: document.title,
-    page_location: window.location.href,
-    referrer: document.referrer || null,
     formacao_superior: formacaoSuperior || 'nao_informado',
     tem_graduacao: formacaoSuperior || 'nao_informado',
     pretende_pos: pretendePos || 'nao_informado',
     urgencia_mba: pretendePos === 'sim_agora' ? 'quer_comecar_agora' : pretendePos || 'nao_informado',
     quer_comecar_agora: pretendePos ? (pretendePos === 'sim_agora' ? 'sim' : 'nao') : 'nao_informado',
-    utm_source: getQueryParam('utm_source'),
-    utm_medium: getQueryParam('utm_medium'),
-    utm_campaign: getQueryParam('utm_campaign'),
-    utm_term: getQueryParam('utm_term'),
-    utm_content: getQueryParam('utm_content'),
   };
 }
 
@@ -104,7 +97,7 @@ async function trackMetaEvent(eventName, formData) {
           telefone: formData ? formData.telefone : null,
           cidade: formData ? formData.cidade : null,
         },
-        custom_data: getMetaCustomData(formData),
+        custom_data: getLeadAnswerData(formData),
       }),
     });
 
@@ -129,23 +122,15 @@ function trackGoogleLead(formData) {
     return;
   }
 
-  const customData = getMetaCustomData(formData);
+  const customData = getLeadAnswerData(formData);
 
   window.gtag('event', 'conversion', {
     send_to: GOOGLE_ADS_SEND_TO,
-    event_category: 'lead',
-    event_label: 'pre-mba-salestech',
     formacao_superior: customData.formacao_superior,
     tem_graduacao: customData.tem_graduacao,
     pretende_pos: customData.pretende_pos,
     urgencia_mba: customData.urgencia_mba,
     quer_comecar_agora: customData.quer_comecar_agora,
-    origem: customData.origem,
-    utm_source: customData.utm_source,
-    utm_medium: customData.utm_medium,
-    utm_campaign: customData.utm_campaign,
-    utm_term: customData.utm_term,
-    utm_content: customData.utm_content,
   });
 }
 
