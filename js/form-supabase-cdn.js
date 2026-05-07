@@ -72,7 +72,6 @@ function getLeadAnswerData(formData) {
 
   return {
     formacao_superior: formacaoSuperior || 'nao_informado',
-    tem_graduacao: formacaoSuperior || 'nao_informado',
     pretende_pos: pretendePos || 'nao_informado',
     urgencia_mba: pretendePos === 'sim_agora' ? 'quer_comecar_agora' : pretendePos || 'nao_informado',
     quer_comecar_agora: pretendePos ? (pretendePos === 'sim_agora' ? 'sim' : 'nao') : 'nao_informado',
@@ -127,7 +126,6 @@ function trackGoogleLead(formData) {
   window.gtag('event', 'conversion', {
     send_to: GOOGLE_ADS_SEND_TO,
     formacao_superior: customData.formacao_superior,
-    tem_graduacao: customData.tem_graduacao,
     pretende_pos: customData.pretende_pos,
     urgencia_mba: customData.urgencia_mba,
     quer_comecar_agora: customData.quer_comecar_agora,

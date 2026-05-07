@@ -90,13 +90,12 @@ module.exports = async function handler(req, res) {
 };
 
 function buildCustomData(data) {
-  const formacaoSuperior = normalizeChoice(data.formacao_superior || data.tem_graduacao);
+  const formacaoSuperior = normalizeChoice(data.formacao_superior);
   const pretendePos = normalizeChoice(data.pretende_pos || data.urgencia_mba);
   const querComecarAgora = pretendePos ? (pretendePos === 'sim_agora' ? 'sim' : 'nao') : '';
 
   return removeEmpty({
     formacao_superior: formacaoSuperior,
-    tem_graduacao: formacaoSuperior,
     pretende_pos: pretendePos,
     urgencia_mba: pretendePos ? mapUrgency(pretendePos) : '',
     quer_comecar_agora: querComecarAgora,
