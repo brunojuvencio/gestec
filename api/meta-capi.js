@@ -91,14 +91,11 @@ module.exports = async function handler(req, res) {
 
 function buildCustomData(data) {
   const formacaoSuperior = normalizeChoice(data.formacao_superior);
-  const pretendePos = normalizeChoice(data.pretende_pos || data.urgencia_mba);
-  const querComecarAgora = pretendePos ? (pretendePos === 'sim_agora' ? 'sim' : 'nao') : '';
+  const pretendePos = normalizeChoice(data.pretende_pos);
 
   return removeEmpty({
     formacao_superior: formacaoSuperior,
     pretende_pos: pretendePos,
-    urgencia_mba: pretendePos ? mapUrgency(pretendePos) : '',
-    quer_comecar_agora: querComecarAgora,
   });
 }
 
@@ -126,13 +123,6 @@ function buildUserData(data, req) {
   });
 }
 
-function mapUrgency(pretendePos) {
-  if (pretendePos === 'sim_agora') return 'quer_comecar_agora';
-  if (pretendePos === 'sim_depois') return 'quer_comecar_depois';
-  if (pretendePos === 'nao') return 'sem_interesse_agora';
-  return 'nao_informado';
-}
-
 function normalizeChoice(value) {
   const normalized = normalizeText(value).replace(/\s+/g, '_');
   if (!normalized) return '';
@@ -140,10 +130,6 @@ function normalizeChoice(value) {
   if (normalized === 'sim' || normalized === 'nao') return normalized;
   if (normalized === 'sim_agora' || normalized === 'sim_imediatamente') return 'sim_agora';
   if (normalized === 'sim_depois' || normalized === 'sim_mas_nao_agora') return 'sim_depois';
-  if (normalized === 'quer_comecar_agora') return 'sim_agora';
-  if (normalized === 'quer_comecar_depois') return 'sim_depois';
-  if (normalized === 'sem_interesse_agora') return 'nao';
-
   return normalized.slice(0, 100);
 }
 
