@@ -63,6 +63,7 @@
       content: ""; position: absolute; inset: 0; border-radius: var(--radius-pill); padding: 1px;
       background: linear-gradient(135deg, var(--yellow-88), var(--yellow-18));
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       -webkit-mask-composite: xor; mask-composite: exclude;
     }
 
@@ -840,6 +841,59 @@
     .fade-up.visible { opacity: 1; transform: translateY(0); }
     .d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s} .d4{transition-delay:.4s}
 
+    /* ---- MODAL DE CONFIRMAÇÃO ---- */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9000;
+      background: rgba(0,0,0,0.78); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #111; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; max-width: 520px; width: 100%;
+      padding: 44px 40px 40px; position: relative;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(254,183,55,0.12);
+    }
+    .modal-close {
+      position: absolute; top: 18px; right: 18px;
+      background: rgba(255,255,255,0.06); border: none; color: rgba(255,255,255,0.5);
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+      font-size: 14px; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .modal-icon {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(254,183,55,0.12); border: 1px solid rgba(254,183,55,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: var(--yellow); margin-bottom: 24px;
+    }
+    .modal-box h3 {
+      font-size: 20px; font-weight: 700; color: #fff;
+      margin-bottom: 20px; line-height: 1.2; letter-spacing: -0.02em;
+    }
+    .modal-box p {
+      font-size: 14px; line-height: 1.72; color: rgba(255,255,255,0.72);
+      margin-bottom: 14px;
+    }
+    .modal-box p:last-of-type { margin-bottom: 0; }
+    .modal-warning {
+      margin-top: 20px; padding: 14px 16px; border-radius: 10px;
+      background: rgba(254,183,55,0.08); border: 1px solid rgba(254,183,55,0.22);
+      font-size: 13px !important; color: rgba(254,183,55,0.9) !important;
+    }
+    .modal-btn {
+      margin-top: 28px; width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--yellow-light), var(--yellow));
+      color: #000; font-weight: 700; font-size: 15px; border: none;
+      border-radius: var(--radius-sm); cursor: pointer;
+      transition: filter 0.2s, transform 0.2s;
+    }
+    .modal-btn:hover { filter: brightness(1.06); transform: translateY(-2px); }
+    @media (max-width: 560px) {
+      .modal-box { padding: 36px 24px 28px; }
+    }
+
     /* ---- RESPONSIVE TABLET ---- */
     @media (max-width: 1000px) {
 
@@ -1332,8 +1386,36 @@
   }
 </script>
 
+<!-- Modal de confirmação de inscrição -->
+<div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close" aria-label="Fechar">✕</button>
+    <div class="modal-icon">✓</div>
+    <h3 id="modal-title">Inscrição recebida!</h3>
+    <p>Obrigado pelo seu interesse na palestra <strong style="color:rgba(255,255,255,0.88)">"Tendências de Vendas B2B e o novo perfil do comprador organizacional"</strong>.</p>
+    <p>Como se trata de um evento com vagas limitadas, sua inscrição passará por confirmação. Em breve, você receberá um e-mail informando se sua participação foi confirmada.</p>
+    <p class="modal-warning"><strong>Atenção:</strong> sua vaga estará garantida somente após o recebimento do e-mail de confirmação.</p>
+    <button class="modal-btn" id="modal-btn-ok">Entendido</button>
+  </div>
+</div>
+
 <!-- Script para integração com Supabase -->
 <script src="js/form-supabase-cdn.js?v=8"></script>
+
+<script>
+  (function () {
+    var modal = document.getElementById('confirm-modal');
+    function openModal() { modal.classList.add('open'); }
+    function closeModal() { modal.classList.remove('open'); }
+
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal-btn-ok').addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+    document.addEventListener('inscricao-confirmada', openModal);
+  })();
+</script>
 
 </body>
 </html>

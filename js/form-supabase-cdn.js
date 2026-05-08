@@ -265,12 +265,12 @@ document.addEventListener('DOMContentLoaded', function () {
         throw new Error(details || 'Erro HTTP ' + response.status);
       }
 
-      setMsg('success', 'Inscricao confirmada! Verifique seu email para os proximos passos.');
       trackMetaEvent('Lead', formData);
       trackGoogleLead(formData);
       btn.disabled = true;
-      btn.innerHTML = 'Inscricao realizada';
+      btn.innerHTML = 'Inscrição realizada';
       form.reset();
+      document.dispatchEvent(new CustomEvent('inscricao-confirmada'));
     } catch (error) {
       console.error('Erro ao salvar inscricao no Supabase:', error);
       setMsg('error', 'Erro ao processar sua inscricao. Tente novamente.');
