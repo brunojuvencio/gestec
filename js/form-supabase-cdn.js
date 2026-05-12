@@ -126,15 +126,23 @@ async function syncActiveCampaign(formData) {
       return null;
     });
 
-    if (!response.ok || (result && result.ok === false && !result.skipped)) {
+    if (!response.ok || !result || result.ok !== true) {
       console.warn('ActiveCampaign sync nao confirmado:', result || response.status);
+      throw new Error(getActiveCampaignErrorMessage(result, response.status));
     }
 
     return result;
   } catch (error) {
     console.warn('ActiveCampaign sync indisponivel:', error);
-    return null;
+    throw error;
   }
+}
+
+function getActiveCampaignErrorMessage(result, status) {
+  if (result && result.message) return result.message;
+  if (result && result.error) return result.error;
+  if (result && result.reason) return result.reason;
+  return 'ActiveCampaign sync failed with status ' + status;
 }
 
 function trackGoogleLead(formData) {
@@ -297,8 +305,8 @@ document.addEventListener('DOMContentLoaded', function () {
       form.reset();
       document.dispatchEvent(new CustomEvent('inscricao-confirmada'));
     } catch (error) {
-      console.error('Erro ao salvar inscricao no Supabase:', error);
-      setMsg('error', 'Erro ao processar sua inscricao. Tente novamente.');
+      console.error('Erro ao processar inscricao:', error);
+      setMsg('error', 'Nao foi possivel confirmar sua inscricao agora. Tente novamente.');
       setButtonLoading(false);
     }
   });

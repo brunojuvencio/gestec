@@ -29,10 +29,10 @@ module.exports = async function handler(req, res) {
     const config = getConfig();
 
     if (!config.baseUrl || !config.apiKey) {
-      return res.status(200).json({
+      return res.status(500).json({
         ok: false,
-        skipped: true,
-        reason: 'missing_active_campaign_config',
+        error: 'missing_active_campaign_config',
+        message: 'Configuracao do ActiveCampaign ausente.',
       });
     }
 
@@ -44,6 +44,7 @@ module.exports = async function handler(req, res) {
     }
 
     const contact = await syncContact(config, lead);
+    const verifiedContact = await verifyContact(config, contact.id, lead.email);
     const tag = await ensureTag(config, config.tagName);
     const contactTag = await ensureContactTag(config, contact.id, tag.id);
     const list = config.listId
@@ -53,8 +54,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       ok: true,
       contact: {
-        id: contact.id,
-        email: contact.email,
+        id: verifiedContact.id || contact.id,
+        email: verifiedContact.email || contact.email,
       },
       tag: {
         id: tag.id,
@@ -75,12 +76,12 @@ module.exports = async function handler(req, res) {
 
 function getConfig() {
   return {
-    baseUrl: normalizeBaseUrl(process.env.ACTIVE_CAMPAIGN_BASE_URL || process.env.ACTIVE_CAMPAIGN_URL),
-    apiKey: cleanString(process.env.ACTIVE_CAMPAIGN_API_KEY),
-    listId: cleanString(process.env.ACTIVE_CAMPAIGN_LIST_ID),
-    tagName: cleanString(process.env.ACTIVE_CAMPAIGN_TAG_NAME) || DEFAULT_TAG_NAME,
+    baseUrl: normalizeBaseUrl(getEnvValue('ACTIVE_CAMPAIGN_BASE_URL') || getEnvValue('ACTIVE_CAMPAIGN_URL')),
+    apiKey: getEnvValue('ACTIVE_CAMPAIGN_API_KEY'),
+    listId: getEnvValue('ACTIVE_CAMPAIGN_LIST_ID'),
+    tagName: getEnvValue('ACTIVE_CAMPAIGN_TAG_NAME') || DEFAULT_TAG_NAME,
     tagDescription:
-      cleanString(process.env.ACTIVE_CAMPAIGN_TAG_DESCRIPTION) ||
+      getEnvValue('ACTIVE_CAMPAIGN_TAG_DESCRIPTION') ||
       'Inscritos na palestra do Pre-MBA Gestao Comercial e Salestech.',
   };
 }
@@ -109,6 +110,24 @@ async function syncContact(config, lead) {
   }
 
   return result.body.contact;
+}
+
+async function verifyContact(config, contactId, expectedEmail) {
+  const result = await activeCampaignRequest(config, '/contacts/' + encodeURIComponent(contactId), {
+    method: 'GET',
+  });
+  const contact = result.body && result.body.contact;
+
+  if (!contact || !contact.id) {
+    throw createPublicError('ActiveCampaign nao confirmou a criacao do contato.');
+  }
+
+  const contactEmail = cleanString(contact.email).toLowerCase();
+  if (expectedEmail && contactEmail !== expectedEmail) {
+    throw createPublicError('ActiveCampaign retornou um contato diferente do enviado.');
+  }
+
+  return contact;
 }
 
 async function ensureTag(config, tagName) {
@@ -206,22 +225,46 @@ async function findContactTag(config, contactId, tagId) {
 }
 
 async function subscribeContactToList(config, contactId, listId) {
-  const result = await activeCampaignRequest(config, '/contactLists', {
-    method: 'POST',
-    body: {
-      contactList: {
-        list: String(listId),
-        contact: String(contactId),
-        status: 1,
-      },
-    },
-  });
+  const existing = await findContactList(config, contactId, listId);
+  if (existing && String(existing.status) === '1') {
+    return { ok: true, existing: true, id: existing.id, listId: String(listId) };
+  }
 
-  return {
-    ok: true,
-    id: result.body && result.body.contactList ? result.body.contactList.id : null,
-    listId: String(listId),
-  };
+  try {
+    const result = await activeCampaignRequest(config, '/contactLists', {
+      method: 'POST',
+      body: {
+        contactList: {
+          list: String(listId),
+          contact: String(contactId),
+          status: 1,
+        },
+      },
+    });
+
+    return {
+      ok: true,
+      existing: false,
+      id: result.body && result.body.contactList ? result.body.contactList.id : null,
+      listId: String(listId),
+    };
+  } catch (error) {
+    const retryExisting = await findContactList(config, contactId, listId);
+    if (retryExisting && String(retryExisting.status) === '1') {
+      return { ok: true, existing: true, id: retryExisting.id, listId: String(listId) };
+    }
+
+    throw error;
+  }
+}
+
+async function findContactList(config, contactId, listId) {
+  const result = await activeCampaignRequest(config, '/contacts/' + encodeURIComponent(contactId) + '/contactLists', {
+    method: 'GET',
+  });
+  const contactLists = Array.isArray(result.body && result.body.contactLists) ? result.body.contactLists : [];
+
+  return contactLists.find((contactList) => String(contactList.list) === String(listId)) || null;
 }
 
 async function activeCampaignRequest(config, path, options) {
@@ -250,7 +293,7 @@ async function activeCampaignRequest(config, path, options) {
 
 function buildFieldValues(lead) {
   return FIELD_ENV_MAP.reduce((fields, [leadKey, envKey]) => {
-    const field = cleanString(process.env[envKey]);
+    const field = getEnvValue(envKey);
     const value = cleanString(lead[leadKey]);
 
     if (field && value) {
@@ -337,6 +380,19 @@ function splitName(value) {
 function cleanString(value) {
   if (value === null || value === undefined) return '';
   return String(value).trim();
+}
+
+function getEnvValue(key) {
+  const value = cleanString(process.env[key]);
+  if (value.length < 2) return value;
+
+  const firstChar = value[0];
+  const lastChar = value[value.length - 1];
+  if ((firstChar === '"' && lastChar === '"') || (firstChar === "'" && lastChar === "'")) {
+    return value.slice(1, -1).trim();
+  }
+
+  return value;
 }
 
 function normalizeComparable(value) {
