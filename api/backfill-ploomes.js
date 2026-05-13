@@ -49,6 +49,10 @@ async function fetchAllLeads(supabaseUrl, supabaseKey) {
   return leads;
 }
 
+function getSupabaseRestBase(supabaseUrl) {
+  return supabaseUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '') + '/rest/v1';
+}
+
 async function fetchLeadsPage(supabaseUrl, supabaseKey, offset, limit) {
   const fields = [
     'nome', 'email', 'telefone', 'cidade', 'area_formacao',
@@ -57,10 +61,11 @@ async function fetchLeadsPage(supabaseUrl, supabaseKey, offset, limit) {
     'utm_campaign', 'utm_term', 'utm_content',
   ].join(',');
 
+  const restBase = getSupabaseRestBase(supabaseUrl);
   const url =
-    supabaseUrl +
-    '/rest/v1/inscricoes_vendas?select=' +
-    fields +
+    restBase +
+    '/inscricoes_vendas?select=' +
+    encodeURIComponent(fields) +
     '&order=id.asc&limit=' +
     limit +
     '&offset=' +
