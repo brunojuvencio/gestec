@@ -3,6 +3,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const TABLE_NAME = 'inscricoes_vendas';
 const META_CAPI_ENDPOINT = '/api/meta-capi';
 const ACTIVE_CAMPAIGN_ENDPOINT = '/api/active-campaign';
+const PLOOMES_CRM_ENDPOINT = '/api/ploomes-crm';
 const GOOGLE_ADS_SEND_TO = 'AW-11029855018/nAueCJfnm6kcELC-ntED';
 
 const hasPlaceholder =
@@ -143,6 +144,37 @@ function getActiveCampaignErrorMessage(result, status) {
   if (result && result.error) return result.error;
   if (result && result.reason) return result.reason;
   return 'ActiveCampaign sync failed with status ' + status;
+}
+
+async function syncPloomesCRM(formData) {
+  try {
+    const response = await fetch(PLOOMES_CRM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+
+    const result = await response.json().catch(function () {
+      return null;
+    });
+
+    if (!response.ok || !result || result.ok !== true) {
+      console.warn('Ploomes CRM sync nao confirmado:', result || response.status);
+      throw new Error(getPloomesCRMErrorMessage(result, response.status));
+    }
+
+    return result;
+  } catch (error) {
+    console.warn('Ploomes CRM sync indisponivel:', error);
+    throw error;
+  }
+}
+
+function getPloomesCRMErrorMessage(result, status) {
+  if (result && result.message) return result.message;
+  if (result && result.error) return result.error;
+  if (result && result.reason) return result.reason;
+  return 'Ploomes CRM sync failed with status ' + status;
 }
 
 function trackGoogleLead(formData) {
@@ -298,6 +330,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       await syncActiveCampaign(formData);
+      await syncPloomesCRM(formData);
       trackMetaEvent('Lead', formData);
       trackGoogleLead(formData);
       btn.disabled = true;
