@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/backfill-ploomes.js": {
+      "maxDuration": 300
+    }
+  },
   "rewrites": [
     {
       "source": "/",
