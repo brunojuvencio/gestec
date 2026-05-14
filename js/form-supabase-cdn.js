@@ -2,6 +2,7 @@ const SUPABASE_URL = 'https://hasptpxcyavfdzxtwpws.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhc3B0cHhjeWF2ZmR6eHR3cHdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDA2MTYsImV4cCI6MjA5MTY3NjYxNn0.5TTFlqGtVl9AqWDzPTylquWRB1QdP1YXxPQRGfu5B68';
 const TABLE_NAME = 'inscricoes_vendas';
 const META_CAPI_ENDPOINT = '/api/meta-capi';
+const LINKEDIN_CAPI_ENDPOINT = '/api/linkedin-capi';
 const ACTIVE_CAMPAIGN_ENDPOINT = '/api/active-campaign';
 const PLOOMES_CRM_ENDPOINT = '/api/ploomes-crm';
 const GOOGLE_ADS_SEND_TO = 'AW-11029855018/nAueCJfnm6kcELC-ntED';
@@ -66,6 +67,22 @@ function createMetaEventId(eventName) {
   return eventName.toLowerCase() + '-' + randomPart;
 }
 
+function createLinkedInEventId(eventName) {
+  const randomPart =
+    window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : Date.now() + '-' + randomInt();
+  return 'linkedin-' + eventName.toLowerCase() + '-' + randomPart;
+}
+
+function ensureLinkedInClickId() {
+  const urlClickId = getQueryParam('li_fat_id');
+  if (urlClickId) {
+    setCookie('li_fat_id', urlClickId, 30);
+    return urlClickId;
+  }
+
+  return getCookie('li_fat_id');
+}
+
 function getLeadAnswerData(formData) {
   if (!formData) return {};
 
@@ -111,6 +128,40 @@ async function trackMetaEvent(eventName, formData) {
     return result;
   } catch (error) {
     console.warn('Meta CAPI tracking indisponivel:', error);
+    return null;
+  }
+}
+
+async function trackLinkedInLead(formData) {
+  try {
+    const response = await fetch(LINKEDIN_CAPI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_id: createLinkedInEventId('Lead'),
+        event_source_url: window.location.href,
+        user_data: {
+          li_fat_id: ensureLinkedInClickId(),
+          nome: formData ? formData.nome : null,
+          email: formData ? formData.email : null,
+          cargo: formData ? formData.cargo : null,
+          empresa: formData ? formData.empresa : null,
+          country_code: 'BR',
+        },
+      }),
+    });
+
+    const result = await response.json().catch(function () {
+      return null;
+    });
+
+    if (!response.ok || (result && result.ok === false && !result.skipped)) {
+      console.warn('LinkedIn CAPI tracking nao confirmado:', result || response.status);
+    }
+
+    return result;
+  } catch (error) {
+    console.warn('LinkedIn CAPI tracking indisponivel:', error);
     return null;
   }
 }
@@ -329,9 +380,14 @@ document.addEventListener('DOMContentLoaded', function () {
         throw new Error(details || 'Erro HTTP ' + response.status);
       }
 
-      await syncActiveCampaign(formData);
-      await syncPloomesCRM(formData);
+      await syncActiveCampaign(formData).catch(function (e) {
+        console.warn('ActiveCampaign sync skipped:', e);
+      });
+      await syncPloomesCRM(formData).catch(function (e) {
+        console.warn('Ploomes CRM sync skipped:', e);
+      });
       trackMetaEvent('Lead', formData);
+      trackLinkedInLead(formData);
       trackGoogleLead(formData);
       btn.disabled = true;
       btn.innerHTML = 'Inscrição realizada';
