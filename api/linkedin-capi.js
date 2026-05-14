@@ -298,6 +298,19 @@ function cleanString(value) {
   return String(value).trim();
 }
 
+function getEnvValue(key) {
+  const value = cleanString(process.env[key]);
+  if (value.length < 2) return value;
+
+  const firstChar = value[0];
+  const lastChar = value[value.length - 1];
+  if ((firstChar === '"' && lastChar === '"') || (firstChar === "'" && lastChar === "'")) {
+    return value.slice(1, -1).trim();
+  }
+
+  return value;
+}
+
 function removeEmpty(object) {
   return Object.fromEntries(
     Object.entries(object).filter(([, value]) => {
