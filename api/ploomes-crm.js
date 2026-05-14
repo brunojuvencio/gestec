@@ -20,7 +20,7 @@ const DEFAULT_DEAL_FIELDS = {
   utmCampaignLegacy: 'deal_D2CE4181-14B7-414C-85F8-D522DC12BD2E',
   utmContent: 'deal_983E5B92-501D-4074-840B-0B22BDD5A987',
   utmSummary: 'deal_1B9FDED4-84A6-4617-A860-6919EBC920D7',
-};
+}
 
 const DEFAULT_DEAL_OPTIONS = {
   iniciarMbaAgora: '28150',
@@ -28,6 +28,8 @@ const DEFAULT_DEAL_OPTIONS = {
   iniciarMbaNao: '28145',
   interesseMba: '389099',
 };
+const DEFAULT_CONTACT_TYPE_ID = '2';
+const EXISTING_CONTACT_DEAL_LIMIT = 1;
 
 const DEAL_FIELD_ENV_MAP = [
   ['nome', 'PLOOMES_DEAL_FIELD_NOME_KEY'],
@@ -91,6 +93,9 @@ module.exports = async function handler(req, res) {
     }
 
     const contactResult = await ensureContact(config, lead);
+    const existingContactNote = contactResult.created
+      ? null
+      : await createExistingContactNote(config, contactResult.contact);
     const stageId = config.stageId || (await findFirstStageId(config, config.pipelineId));
     const deal = await createDeal(config, lead, contactResult.contact, stageId);
     const history = await createHistoryRecord(config, lead, contactResult.contact, deal);
@@ -112,6 +117,11 @@ module.exports = async function handler(req, res) {
       history: {
         id: history.id || history.Id,
       },
+      existingContactNote: existingContactNote
+        ? {
+            id: existingContactNote.id || existingContactNote.Id,
+          }
+        : null,
     });
   } catch (error) {
     console.error('Ploomes CRM sync error:', error);
@@ -134,7 +144,7 @@ function getConfig() {
     ownerId: getEnvValue('PLOOMES_OWNER_ID'),
     dealOriginId: getEnvValue('PLOOMES_DEAL_ORIGIN_ID'),
     contactOriginId: getEnvValue('PLOOMES_CONTACT_ORIGIN_ID'),
-    contactTypeId: getEnvValue('PLOOMES_CONTACT_TYPE_ID'),
+    contactTypeId: getContactPersonTypeId(),
     phoneTypeId: getEnvValue('PLOOMES_PHONE_TYPE_ID'),
     currencyId: getEnvValue('PLOOMES_CURRENCY_ID'),
     interactionTypeId: getEnvValue('PLOOMES_INTERACTION_TYPE_ID'),
@@ -296,6 +306,127 @@ async function findLatestDealByTitle(config, title) {
   );
 
   return getCollection(result.body)[0] || null;
+}
+
+async function createExistingContactNote(config, contact) {
+  const contactId = contact.Id || contact.id;
+  if (!contactId) {
+    throw createPublicError('Ploomes nao retornou o contato existente.');
+  }
+
+  const dealContexts = await findRecentDealContexts(config, contactId);
+  const payload = removeEmpty({
+    ContactId: contactId,
+    TypeId: toNumberOrEmpty(config.interactionTypeId),
+    Content: buildExistingContactNote(dealContexts),
+  });
+
+  const result = await ploomesRequest(config, '/InteractionRecords', {
+    method: 'POST',
+    body: payload,
+  });
+  const note = getSingleRecord(result.body);
+
+  if (!note || !note.Id) {
+    return findLatestContactInteractionRecord(config, contactId);
+  }
+
+  return note;
+}
+
+async function findRecentDealContexts(config, contactId) {
+  const filter = 'ContactId eq ' + Number(contactId);
+  const path =
+    '/Deals?$select=Id,Title,PipelineId,StageId&$expand=' +
+    encodeURIComponent('Pipeline($select=Id,Name),Stage($select=Id,Name)') +
+    '&$filter=' +
+    encodeURIComponent(filter) +
+    '&$orderby=Id desc&$top=' +
+    EXISTING_CONTACT_DEAL_LIMIT;
+
+  try {
+    const result = await ploomesRequest(config, path, { method: 'GET' });
+    return enrichDealContextNames(config, getCollection(result.body).map(normalizeDealContext));
+  } catch (error) {
+    if (!error.status || error.status === 401 || error.status === 403 || error.status >= 500) {
+      throw error;
+    }
+  }
+
+  const fallbackResult = await ploomesRequest(
+    config,
+    '/Deals?$select=Id,Title,PipelineId,StageId&$filter=' +
+      encodeURIComponent(filter) +
+      '&$orderby=Id desc&$top=' +
+      EXISTING_CONTACT_DEAL_LIMIT,
+    { method: 'GET' }
+  );
+
+  return enrichDealContextNames(config, getCollection(fallbackResult.body).map(normalizeDealContext));
+}
+
+async function enrichDealContextNames(config, dealContexts) {
+  for (const deal of dealContexts) {
+    if (!deal.pipelineName && deal.pipelineId) {
+      deal.pipelineName = await findDealPipelineName(config, deal.pipelineId);
+    }
+
+    if (!deal.stageName && deal.stageId) {
+      deal.stageName = await findDealStageName(config, deal.stageId);
+    }
+  }
+
+  return dealContexts;
+}
+
+function findDealPipelineName(config, pipelineId) {
+  return findPloomesEntityName(config, '/Deals@Pipelines', pipelineId);
+}
+
+function findDealStageName(config, stageId) {
+  return findPloomesEntityName(config, '/Deals@Stages', stageId);
+}
+
+async function findPloomesEntityName(config, path, id) {
+  const numericId = Number(id);
+  if (!Number.isFinite(numericId)) return '';
+
+  try {
+    const result = await ploomesRequest(
+      config,
+      path +
+        '?$select=Id,Name&$filter=' +
+        encodeURIComponent('Id eq ' + numericId) +
+        '&$top=1',
+      { method: 'GET' }
+    );
+    const entity = getCollection(result.body)[0];
+    return entity ? cleanString(entity.Name || entity.name) : '';
+  } catch (error) {
+    if (!error.status || error.status === 401 || error.status === 403 || error.status >= 500) {
+      throw error;
+    }
+
+    return '';
+  }
+}
+
+async function findLatestContactInteractionRecord(config, contactId) {
+  const filter = 'ContactId eq ' + Number(contactId);
+  const result = await ploomesRequest(
+    config,
+    '/InteractionRecords?$select=Id,ContactId,DealId&$filter=' +
+      encodeURIComponent(filter) +
+      '&$orderby=Id desc&$top=1',
+    { method: 'GET' }
+  );
+  const note = getCollection(result.body)[0];
+
+  if (!note || !note.Id) {
+    throw createPublicError('Ploomes nao confirmou a nota do contato existente.');
+  }
+
+  return note;
 }
 
 async function createHistoryRecord(config, lead, contact, deal) {
@@ -546,6 +677,55 @@ function buildDealTitle(lead) {
   return 'Pre-MBA Gestao Comercial e Salestech - ' + name;
 }
 
+function buildExistingContactNote(dealContexts) {
+  const rows = [
+    'Este contato ja possui historico no CRM.',
+    'Antes de iniciar uma nova abordagem, vale revisar o contexto mais recente:',
+  ];
+
+  if (dealContexts.length) {
+    dealContexts.forEach(function (deal, index) {
+      const pipelineName = deal.pipelineName || formatFallbackEntityName('ID', deal.pipelineId);
+      const stageName = deal.stageName || formatFallbackEntityName('ID', deal.stageId);
+
+      rows.push(
+        index +
+          1 +
+          '. ' +
+          deal.title +
+          ' | Funil: ' +
+          pipelineName +
+          ' | Etapa: ' +
+          stageName
+      );
+    });
+  } else {
+    rows.push('Nenhum negocio anterior encontrado para este contato.');
+  }
+
+  return rows.join('\n');
+}
+
+function normalizeDealContext(deal) {
+  const pipeline = deal.Pipeline || deal.pipeline || {};
+  const stage = deal.Stage || deal.stage || {};
+  const pipelineId = deal.PipelineId || deal.pipelineId;
+  const stageId = deal.StageId || deal.stageId;
+
+  return {
+    title: cleanString(deal.Title || deal.title) || 'Negocio sem titulo',
+    pipelineId,
+    stageId,
+    pipelineName: cleanString(pipeline.Name || pipeline.name),
+    stageName: cleanString(stage.Name || stage.name),
+  };
+}
+
+function formatFallbackEntityName(label, value) {
+  const cleanValue = cleanString(value);
+  return cleanValue ? label + ' ' + cleanValue : 'Nao informado';
+}
+
 function buildLeadHistory(lead) {
   const rows = [
     ['Nome', lead.nome],
@@ -608,6 +788,14 @@ function normalizeLead(body) {
     utm_term: cleanString(body.utm_term),
     utm_content: cleanString(body.utm_content),
   };
+}
+
+function getContactPersonTypeId() {
+  const contactTypeId = getEnvValue('PLOOMES_CONTACT_TYPE_ID');
+  const numericTypeId = Number(contactTypeId);
+  return contactTypeId && Number.isFinite(numericTypeId) && numericTypeId !== 1
+    ? contactTypeId
+    : DEFAULT_CONTACT_TYPE_ID;
 }
 
 async function readJsonBody(req) {
