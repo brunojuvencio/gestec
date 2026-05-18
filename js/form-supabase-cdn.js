@@ -6,6 +6,7 @@ const LINKEDIN_CAPI_ENDPOINT = '/api/linkedin-capi';
 const ACTIVE_CAMPAIGN_ENDPOINT = '/api/active-campaign';
 const PLOOMES_CRM_ENDPOINT = '/api/ploomes-crm';
 const GOOGLE_ADS_SEND_TO = 'AW-11029855018/nAueCJfnm6kcELC-ntED';
+const GA4_MEASUREMENT_ID = 'G-EZW8F7QZB0';
 
 const hasPlaceholder =
   SUPABASE_URL === 'https://seu-projeto.supabase.co' ||
@@ -238,6 +239,12 @@ function trackGoogleLead(formData) {
 
   window.gtag('event', 'conversion', {
     send_to: GOOGLE_ADS_SEND_TO,
+    formacao_superior: customData.formacao_superior,
+    pretende_pos: customData.pretende_pos,
+  });
+
+  window.gtag('event', 'generate_lead', {
+    send_to: GA4_MEASUREMENT_ID,
     formacao_superior: customData.formacao_superior,
     pretende_pos: customData.pretende_pos,
   });
