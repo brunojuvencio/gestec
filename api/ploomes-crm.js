@@ -674,7 +674,7 @@ function getQuandoIniciarMbaOptionId(value) {
 
 function buildDealTitle(lead) {
   const name = lead.nome || 'Lead';
-  return 'Pre-MBA Gestao Comercial e Salestech - ' + name;
+  return 'Pre-MBA Gestao de Pipeline: Metricas e Indicadores Criticos - ' + name;
 }
 
 function buildExistingContactNote(dealContexts) {
