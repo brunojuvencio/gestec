@@ -95,10 +95,15 @@ module.exports = async function handler(req, res) {
     const contactResult = await ensureContact(config, lead);
     const stageId = config.stageId || (await findFirstStageId(config, config.pipelineId));
     const deal = await createDeal(config, lead, contactResult.contact, stageId);
-    const history = await createHistoryRecord(config, lead, contactResult.contact, deal);
-    const existingContactNote = contactResult.created
-      ? null
-      : await createExistingContactNote(config, contactResult.contact, deal);
+
+    let history = null;
+    let existingContactNote = null;
+
+    if (contactResult.created) {
+      history = await createHistoryRecord(config, lead, contactResult.contact, deal);
+    } else {
+      existingContactNote = await createExistingContactNote(config, contactResult.contact, deal);
+    }
 
     return res.status(200).json({
       ok: true,
@@ -114,13 +119,9 @@ module.exports = async function handler(req, res) {
         pipelineId: String(config.pipelineId),
         stageId: String(stageId),
       },
-      history: {
-        id: history.id || history.Id,
-      },
+      history: history ? { id: history.id || history.Id } : null,
       existingContactNote: existingContactNote
-        ? {
-            id: existingContactNote.id || existingContactNote.Id,
-          }
+        ? { id: existingContactNote.id || existingContactNote.Id }
         : null,
     });
   } catch (error) {
