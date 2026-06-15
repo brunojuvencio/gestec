@@ -93,12 +93,12 @@ module.exports = async function handler(req, res) {
     }
 
     const contactResult = await ensureContact(config, lead);
-    const existingContactNote = contactResult.created
-      ? null
-      : await createExistingContactNote(config, contactResult.contact);
     const stageId = config.stageId || (await findFirstStageId(config, config.pipelineId));
     const deal = await createDeal(config, lead, contactResult.contact, stageId);
     const history = await createHistoryRecord(config, lead, contactResult.contact, deal);
+    const existingContactNote = contactResult.created
+      ? null
+      : await createExistingContactNote(config, contactResult.contact, deal);
 
     return res.status(200).json({
       ok: true,
@@ -308,15 +308,17 @@ async function findLatestDealByTitle(config, title) {
   return getCollection(result.body)[0] || null;
 }
 
-async function createExistingContactNote(config, contact) {
+async function createExistingContactNote(config, contact, deal) {
   const contactId = contact.Id || contact.id;
   if (!contactId) {
     throw createPublicError('Ploomes nao retornou o contato existente.');
   }
 
+  const dealId = deal ? (deal.Id || deal.id) : null;
   const dealContexts = await findRecentDealContexts(config, contactId);
   const payload = removeEmpty({
     ContactId: contactId,
+    DealId: toNumberOrEmpty(dealId),
     TypeId: toNumberOrEmpty(config.interactionTypeId),
     Content: buildExistingContactNote(dealContexts),
   });
