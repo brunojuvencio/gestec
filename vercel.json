@@ -9,5 +9,11 @@
       "source": "/",
       "destination": "/pre-mba-salestech.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/linkedin-lead-sync",
+      "schedule": "*/15 * * * *"
+    }
   ]
 }
