@@ -3,6 +3,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const TABLE_NAME = 'inscricoes_vendas';
 const META_CAPI_ENDPOINT = '/api/meta-capi';
 const LINKEDIN_CAPI_ENDPOINT = '/api/linkedin-capi';
+const GOOGLE_CAPI_ENDPOINT = '/api/google-capi';
 const ACTIVE_CAMPAIGN_ENDPOINT = '/api/active-campaign';
 const PLOOMES_CRM_ENDPOINT = '/api/ploomes-crm';
 const GOOGLE_ADS_SEND_TO = 'AW-11029855018/nAueCJfnm6kcELC-ntED';
@@ -163,6 +164,37 @@ async function trackLinkedInLead(formData) {
     return result;
   } catch (error) {
     console.warn('LinkedIn CAPI tracking indisponivel:', error);
+    return null;
+  }
+}
+
+async function trackGoogleCapiLead(formData) {
+  try {
+    const response = await fetch(GOOGLE_CAPI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_data: {
+          nome: formData ? formData.nome : null,
+          email: formData ? formData.email : null,
+          telefone: formData ? formData.telefone : null,
+          ga_client_id: getCookie('_ga'),
+        },
+        session_id: getCookie('_ga_' + GA4_MEASUREMENT_ID.replace('G-', '')),
+      }),
+    });
+
+    const result = await response.json().catch(function () {
+      return null;
+    });
+
+    if (!response.ok || (result && result.ok === false && !result.skipped)) {
+      console.warn('Google CAPI tracking nao confirmado:', result || response.status);
+    }
+
+    return result;
+  } catch (error) {
+    console.warn('Google CAPI tracking indisponivel:', error);
     return null;
   }
 }
@@ -395,6 +427,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
       trackMetaEvent('Lead', formData);
       trackLinkedInLead(formData);
+      trackGoogleCapiLead(formData);
       trackGoogleLead(formData);
       btn.disabled = true;
       btn.innerHTML = 'Inscrição realizada';

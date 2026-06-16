@@ -105,6 +105,23 @@ async function runSync(baseUrl, verbose) {
           if (leadStatus) leadStatus.ploomes = 'error: ' + error.message;
         });
 
+      console.log('[linkedin-lead-sync] Enviando para Google CAPI: ' + lead.email);
+      await sendToEndpoint(baseUrl + '/api/google-capi', {
+        user_data: {
+          nome: buildFullName(lead),
+          email: lead.email,
+          telefone: lead.phone || null,
+        },
+      })
+        .then(function () {
+          console.log('[linkedin-lead-sync] Google CAPI ok: ' + lead.email);
+          if (leadStatus) leadStatus.googleCapi = 'ok';
+        })
+        .catch(function (error) {
+          console.error('[linkedin-lead-sync] Google CAPI erro para ' + lead.email + ':', error.message);
+          if (leadStatus) leadStatus.googleCapi = 'error: ' + error.message;
+        });
+
       result.synced += 1;
       if (verbose) result.leads.push(leadStatus);
     } catch (error) {
