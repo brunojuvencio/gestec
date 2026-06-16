@@ -34,13 +34,25 @@ module.exports = async function handler(req, res) {
     const eventId = cleanString(body.event_id) || createEventId();
     const clientId = resolveClientId(userData, body.client_id);
     const sessionId = cleanString(body.session_id);
+    const origem = cleanString(body.origem);
+    const utmSource = cleanString(body.utm_source);
+    const utmMedium = cleanString(body.utm_medium);
+    const utmCampaign = cleanString(body.utm_campaign);
+    const utmContent = cleanString(body.utm_content);
+    const utmTerm = cleanString(body.utm_term);
 
     const eventParams = removeEmpty({
       currency: 'BRL',
       value: 0,
       event_id: eventId,
-      session_id: sessionId || undefined,
+      session_id: sessionId,
       engagement_time_msec: 1,
+      origem: origem,
+      utm_source: utmSource,
+      utm_medium: utmMedium,
+      utm_campaign: utmCampaign,
+      utm_content: utmContent,
+      utm_term: utmTerm,
     });
 
     const payload = removeEmpty({

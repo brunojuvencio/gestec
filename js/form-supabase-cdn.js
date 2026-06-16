@@ -75,6 +75,13 @@ function createLinkedInEventId(eventName) {
   return 'linkedin-' + eventName.toLowerCase() + '-' + randomPart;
 }
 
+function extractGa4SessionId(cookieValue) {
+  if (!cookieValue) return null;
+  const parts = cookieValue.split('.');
+  if (parts.length >= 3) return parts[2];
+  return cookieValue;
+}
+
 function ensureLinkedInClickId() {
   const urlClickId = getQueryParam('li_fat_id');
   if (urlClickId) {
@@ -180,7 +187,13 @@ async function trackGoogleCapiLead(formData) {
           telefone: formData ? formData.telefone : null,
           ga_client_id: getCookie('_ga'),
         },
-        session_id: getCookie('_ga_' + GA4_MEASUREMENT_ID.replace('G-', '')),
+        session_id: extractGa4SessionId(getCookie('_ga_' + GA4_MEASUREMENT_ID.replace('G-', ''))),
+        origem: formData ? formData.origem : null,
+        utm_source: formData ? formData.utm_source : null,
+        utm_medium: formData ? formData.utm_medium : null,
+        utm_campaign: formData ? formData.utm_campaign : null,
+        utm_content: formData ? formData.utm_content : null,
+        utm_term: formData ? formData.utm_term : null,
       }),
     });
 

@@ -112,6 +112,12 @@ async function runSync(baseUrl, verbose) {
           email: lead.email,
           telefone: lead.phone || null,
         },
+        origem: 'forms-linkedin-pipeline',
+        utm_source: utms.utm_source,
+        utm_medium: utms.utm_medium,
+        utm_campaign: utms.utm_campaign || null,
+        utm_content: utms.utm_content,
+        utm_term: utms.utm_term || null,
       })
         .then(function () {
           console.log('[linkedin-lead-sync] Google CAPI ok: ' + lead.email);
