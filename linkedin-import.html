@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Importar Leads LinkedIn</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f3f4f6; padding: 2rem; color: #111; }
+    .container { max-width: 760px; margin: 0 auto; }
+    h1 { font-size: 1.375rem; font-weight: 700; margin-bottom: 1.5rem; }
+    .card { background: white; border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    label { display: block; font-size: .8125rem; font-weight: 600; color: #444; margin-bottom: .375rem; }
+    input[type=password] {
+      width: 100%; padding: .5rem .75rem; border: 1px solid #d1d5db; border-radius: 6px;
+      font-size: .875rem; outline: none;
+    }
+    input[type=password]:focus { border-color: #0077b5; box-shadow: 0 0 0 3px rgba(0,119,181,.15); }
+    .upload-area {
+      margin-top: 1rem; border: 2px dashed #d1d5db; border-radius: 8px;
+      padding: 2rem; text-align: center; cursor: pointer; transition: border-color .2s;
+    }
+    .upload-area:hover, .upload-area.dragover { border-color: #0077b5; background: #f0f7ff; }
+    .upload-area input { display: none; }
+    .upload-area p { font-size: .875rem; color: #6b7280; margin-top: .5rem; }
+    .upload-area strong { font-size: .9375rem; color: #374151; }
+    .preview { margin-top: 1rem; font-size: .8125rem; color: #555; line-height: 1.6; }
+    .preview .count { font-weight: 700; color: #0077b5; font-size: 1rem; }
+    button {
+      display: block; width: 100%; background: #0077b5; color: white;
+      border: none; border-radius: 7px; padding: .75rem 1.5rem;
+      font-size: .9375rem; font-weight: 600; cursor: pointer; margin-top: 1rem;
+      transition: background .15s;
+    }
+    button:hover:not(:disabled) { background: #005f93; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .stats { display: flex; gap: 1.5rem; margin-bottom: 1rem; }
+    .stat { flex: 1; text-align: center; padding: 1rem; border-radius: 8px; }
+    .stat strong { display: block; font-size: 2rem; font-weight: 700; line-height: 1; }
+    .stat span { font-size: .8125rem; color: #6b7280; margin-top: .25rem; display: block; }
+    .synced { background: #f0fdf4; }
+    .synced strong { color: #16a34a; }
+    .skipped-stat { background: #fefce8; }
+    .skipped-stat strong { color: #ca8a04; }
+    .error-stat { background: #fef2f2; }
+    .error-stat strong { color: #dc2626; }
+    table { width: 100%; border-collapse: collapse; font-size: .8125rem; }
+    th { text-align: left; padding: .5rem .75rem; border-bottom: 2px solid #e5e7eb; color: #6b7280; font-weight: 600; }
+    td { padding: .5rem .75rem; border-bottom: 1px solid #f3f4f6; }
+    .badge { display: inline-block; padding: .125rem .5rem; border-radius: 999px; font-size: .75rem; font-weight: 600; }
+    .badge-synced { background: #dcfce7; color: #15803d; }
+    .badge-skipped { background: #fef9c3; color: #854d0e; }
+    .badge-error { background: #fee2e2; color: #991b1b; }
+    .badge-ok { background: #dbeafe; color: #1d4ed8; }
+    .badge-err { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Importar Leads LinkedIn</h1>
+
+  <div class="card">
+    <label>Chave de autenticação (CRON_SECRET)</label>
+    <input type="password" id="secret" placeholder="Cole o CRON_SECRET aqui">
+
+    <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept=".csv">
+      <strong id="uploadLabel">Clique para selecionar o arquivo CSV</strong>
+      <p>Exportado pelo LinkedIn Campaign Manager</p>
+    </div>
+
+    <div class="preview" id="preview"></div>
+
+    <button id="btn" onclick="importLeads()" disabled>Importar leads</button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+  let parsedLeads = [];
+
+  const secretInput = document.getElementById('secret');
+  const savedSecret = localStorage.getItem('li_import_secret');
+  if (savedSecret) secretInput.value = savedSecret;
+
+  const uploadArea = document.getElementById('uploadArea');
+  uploadArea.addEventListener('dragover', function(e) { e.preventDefault(); uploadArea.classList.add('dragover'); });
+  uploadArea.addEventListener('dragleave', function() { uploadArea.classList.remove('dragover'); });
+  uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  });
+
+  document.getElementById('fileInput').addEventListener('change', function(e) {
+    if (e.target.files[0]) processFile(e.target.files[0]);
+  });
+
+  function processFile(file) {
+    document.getElementById('uploadLabel').textContent = file.name;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        parsedLeads = results.data;
+        const headers = results.meta.fields || [];
+        const emailCol = headers.find(function(h) {
+          return ['email', 'email address', 'endereço de e-mail', 'endereço de email'].indexOf(h.toLowerCase().trim()) !== -1;
+        });
+        const preview = document.getElementById('preview');
+        preview.innerHTML =
+          '<span class="count">' + parsedLeads.length + ' lead(s) encontrado(s)</span><br>' +
+          'Colunas: ' + headers.join(' · ') +
+          (emailCol ? '' : '<br><strong style="color:#dc2626">⚠ Coluna de email não detectada — verifique o arquivo</strong>');
+        document.getElementById('btn').disabled = !emailCol;
+      },
+      error: function(err) {
+        document.getElementById('preview').innerHTML =
+          '<strong style="color:#dc2626">Erro ao ler arquivo: ' + err.message + '</strong>';
+      }
+    });
+  }
+
+  async function importLeads() {
+    const secret = secretInput.value.trim();
+    if (!secret) { alert('Informe o CRON_SECRET'); return; }
+    if (!parsedLeads.length) { alert('Selecione um arquivo CSV'); return; }
+
+    localStorage.setItem('li_import_secret', secret);
+
+    const btn = document.getElementById('btn');
+    btn.disabled = true;
+    btn.textContent = 'Importando...';
+    document.getElementById('result').innerHTML = '';
+
+    try {
+      const response = await fetch('/api/linkedin-leads-import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-cron-secret': secret },
+        body: JSON.stringify({ leads: parsedLeads }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        document.getElementById('result').innerHTML =
+          '<div class="card"><strong style="color:#dc2626">Erro: ' + (result.error || response.status) + '</strong></div>';
+        return;
+      }
+
+      let html = '<div class="card"><div class="stats">';
+      html += '<div class="stat synced"><strong>' + (result.synced || 0) + '</strong><span>Importados</span></div>';
+      html += '<div class="stat skipped-stat"><strong>' + (result.skipped || 0) + '</strong><span>Ignorados (já existem)</span></div>';
+      html += '<div class="stat error-stat"><strong>' + (result.errors ? result.errors.length : 0) + '</strong><span>Erros</span></div>';
+      html += '</div></div>';
+
+      if (result.leads && result.leads.length) {
+        html += '<div class="card"><table>';
+        html += '<tr><th>Email</th><th>Nome</th><th>Status</th><th>ActiveCampaign</th><th>Ploomes</th></tr>';
+        result.leads.forEach(function(lead) {
+          if (lead.status === 'skipped' && !lead.email) return;
+          const statusClass = lead.status === 'synced' ? 'badge-synced' : lead.status === 'skipped' ? 'badge-skipped' : 'badge-error';
+          const ac = lead.activeCampaign === 'ok' ? '<span class="badge badge-ok">ok</span>' : lead.activeCampaign ? '<span class="badge badge-err">erro</span>' : '—';
+          const pl = lead.ploomes === 'ok' ? '<span class="badge badge-ok">ok</span>' : lead.ploomes ? '<span class="badge badge-err">erro</span>' : '—';
+          html += '<tr>';
+          html += '<td>' + (lead.email || '—') + '</td>';
+          html += '<td>' + (lead.nome || '—') + '</td>';
+          html += '<td><span class="badge ' + statusClass + '">' + (lead.status || '—') + (lead.reason ? ' · ' + lead.reason : '') + '</span></td>';
+          html += '<td>' + ac + '</td>';
+          html += '<td>' + pl + '</td>';
+          html += '</tr>';
+        });
+        html += '</table></div>';
+      }
+
+      document.getElementById('result').innerHTML = html;
+    } catch (err) {
+      document.getElementById('result').innerHTML =
+        '<div class="card"><strong style="color:#dc2626">Erro de rede: ' + err.message + '</strong></div>';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Importar leads';
+  }
+</script>
+</body>
+</html>
