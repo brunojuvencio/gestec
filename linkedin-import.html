@@ -108,7 +108,7 @@
         parsedLeads = results.data;
         const headers = results.meta.fields || [];
         const emailCol = headers.find(function(h) {
-          return ['email', 'email address', 'endereço de e-mail', 'endereço de email'].indexOf(h.toLowerCase().trim()) !== -1;
+          return ['email', 'e-mail', 'email address', 'endereço de e-mail', 'endereço de email'].indexOf(h.toLowerCase().trim()) !== -1;
         });
         const preview = document.getElementById('preview');
         preview.innerHTML =
