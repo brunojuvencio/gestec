@@ -2,14 +2,15 @@ const TABLE_NAME = 'inscricoes_vendas';
 
 const COLUMN_ALIASES = {
   email: ['email', 'email address', 'endereço de e-mail', 'endereço de email', 'e-mail'],
-  firstName: ['first name', 'primeiro nome', 'firstname'],
+  firstName: ['first name', 'primeiro nome', 'firstname', 'nome'],
   lastName: ['last name', 'último nome', 'sobrenome', 'lastname'],
-  nome: ['nome', 'name', 'full name', 'nome completo'],
+  fullName: ['full name', 'nome completo'],
   phone: ['phone', 'phone number', 'número de telefone', 'telefone', 'mobile', 'mobile phone'],
   company: ['company', 'company name', 'empresa', 'nome da empresa'],
   jobTitle: ['job title', 'cargo', 'title', 'função', 'jobtitle'],
-  linkedinLeadId: ['lead id', 'id', 'leadid', 'lead_id', 'id do lead'],
-  campaignName: ['campaign name', 'nome da campanha', 'campaign'],
+  linkedinLeadId: ['lead_id', 'lead id', 'leadid', 'id do lead'],
+  campaignName: ['form_name', 'form name', 'campaign name', 'nome da campanha', 'campaign'],
+  cidade: ['cidade', 'city', 'location', 'localização'],
 };
 
 module.exports = async function handler(req, res) {
@@ -105,7 +106,7 @@ function normalizeLead(raw) {
 
   const firstName = get(COLUMN_ALIASES.firstName);
   const lastName = get(COLUMN_ALIASES.lastName);
-  const fullName = get(COLUMN_ALIASES.nome);
+  const fullName = get(COLUMN_ALIASES.fullName);
 
   let nome;
   if (fullName) {
@@ -120,6 +121,7 @@ function normalizeLead(raw) {
     telefone: get(COLUMN_ALIASES.phone),
     empresa: get(COLUMN_ALIASES.company),
     cargo: get(COLUMN_ALIASES.jobTitle),
+    cidade: get(COLUMN_ALIASES.cidade),
     linkedinLeadId: get(COLUMN_ALIASES.linkedinLeadId),
     campaignName: get(COLUMN_ALIASES.campaignName),
   };
@@ -135,9 +137,9 @@ function buildIntegrationPayload(lead) {
     origem: 'forms-linkedin-pipeline',
     source: 'LinkedIn',
     utm_source: 'linkedin',
-    utm_medium: 'paid_social',
+    utm_medium: 'forms',
     utm_campaign: lead.campaignName || null,
-    utm_content: 'lead_gen_form',
+    utm_content: 'mensagem',
     utm_term: null,
   });
 }
@@ -174,16 +176,16 @@ async function insertLead(supabaseUrl, supabaseKey, lead) {
     telefone: lead.telefone || '',
     empresa: lead.empresa || '',
     cargo: lead.cargo || '',
-    cidade: '',
+    cidade: lead.cidade || '',
     area_formacao: '',
     formacao_superior: 'nao_informado',
     pretende_pos: 'nao_informado',
     origem: 'forms-linkedin-pipeline',
     url_origem: null,
     utm_source: 'linkedin',
-    utm_medium: 'paid_social',
+    utm_medium: 'forms',
     utm_campaign: lead.campaignName || null,
-    utm_content: 'lead_gen_form',
+    utm_content: 'mensagem',
     utm_term: null,
     linkedin_lead_id: lead.linkedinLeadId || null,
   });

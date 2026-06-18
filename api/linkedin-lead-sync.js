@@ -219,9 +219,9 @@ function extractFieldValue(field) {
 function buildUtms(lead) {
   return {
     utm_source: 'linkedin',
-    utm_medium: 'paid_social',
+    utm_medium: 'forms',
     utm_campaign: lead.campaignName || getEnvValue('LINKEDIN_CAMPAIGN_NAME'),
-    utm_content: 'lead_gen_form',
+    utm_content: 'mensagem',
     utm_term: null,
   };
 }
