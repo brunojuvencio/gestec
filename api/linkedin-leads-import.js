@@ -13,6 +13,7 @@ const COLUMN_ALIASES = {
   cidade: ['cidade', 'city', 'location', 'localização'],
   formacaoSuperior: ['possui formação superior?', 'possui formacao superior?', 'formação superior', 'formacao superior', 'higher education'],
   pretendePos: ['pretende fazer uma pós-graduação ou mba?', 'pretende fazer uma pos-graduacao ou mba?', 'pretende pos', 'intends postgrad'],
+  areaFormacao: ['diploma', 'área de formação', 'area de formacao', 'area_formacao', 'field of study', 'degree'],
 };
 
 function mapFormacaoSuperior(raw) {
@@ -149,6 +150,7 @@ function normalizeLead(raw) {
     campaignName: get(COLUMN_ALIASES.campaignName),
     formacaoSuperior: mapFormacaoSuperior(get(COLUMN_ALIASES.formacaoSuperior)),
     pretendePos: mapPretendePos(get(COLUMN_ALIASES.pretendePos)),
+    areaFormacao: get(COLUMN_ALIASES.areaFormacao),
   };
 }
 
@@ -202,7 +204,7 @@ async function insertLead(supabaseUrl, supabaseKey, lead) {
     empresa: lead.empresa || '',
     cargo: lead.cargo || '',
     cidade: lead.cidade || '',
-    area_formacao: '',
+    area_formacao: lead.areaFormacao || '',
     formacao_superior: lead.formacaoSuperior || 'nao_informado',
     pretende_pos: lead.pretendePos || 'nao_informado',
     origem: 'forms-linkedin-pipeline',
@@ -245,10 +247,11 @@ async function updateLeadFields(supabaseUrl, supabaseKey, lead) {
       'Content-Type': 'application/json',
       Prefer: 'return=minimal',
     },
-    body: JSON.stringify({
+    body: JSON.stringify(removeEmpty({
       formacao_superior: lead.formacaoSuperior,
       pretende_pos: lead.pretendePos,
-    }),
+      area_formacao: lead.areaFormacao || undefined,
+    })),
   });
 
   if (!response.ok) {
