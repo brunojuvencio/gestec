@@ -11,7 +11,24 @@ const COLUMN_ALIASES = {
   linkedinLeadId: ['lead_id', 'lead id', 'leadid', 'id do lead'],
   campaignName: ['form_name', 'form name', 'campaign name', 'nome da campanha', 'campaign'],
   cidade: ['cidade', 'city', 'location', 'localização'],
+  formacaoSuperior: ['possui formação superior?', 'possui formacao superior?', 'formação superior', 'formacao superior', 'higher education'],
+  pretendePos: ['pretende fazer uma pós-graduação ou mba?', 'pretende fazer uma pos-graduacao ou mba?', 'pretende pos', 'intends postgrad'],
 };
+
+function mapFormacaoSuperior(raw) {
+  const v = cleanString(raw).toLowerCase();
+  if (v === 'sim' || v === 'yes' || v === 'true') return 'sim';
+  if (v === 'não' || v === 'nao' || v === 'no' || v === 'false') return 'nao';
+  return 'nao_informado';
+}
+
+function mapPretendePos(raw) {
+  const v = cleanString(raw).toLowerCase();
+  if (v.includes('imediatamente') || v.includes('immediately') || v === 'sim_agora') return 'sim_agora';
+  if (v.includes('não agora') || v.includes('nao agora') || v.includes('not now') || v === 'sim_depois') return 'sim_depois';
+  if (v === 'não' || v === 'nao' || v === 'no') return 'nao';
+  return 'nao_informado';
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -124,6 +141,8 @@ function normalizeLead(raw) {
     cidade: get(COLUMN_ALIASES.cidade),
     linkedinLeadId: get(COLUMN_ALIASES.linkedinLeadId),
     campaignName: get(COLUMN_ALIASES.campaignName),
+    formacaoSuperior: mapFormacaoSuperior(get(COLUMN_ALIASES.formacaoSuperior)),
+    pretendePos: mapPretendePos(get(COLUMN_ALIASES.pretendePos)),
   };
 }
 
@@ -178,8 +197,8 @@ async function insertLead(supabaseUrl, supabaseKey, lead) {
     cargo: lead.cargo || '',
     cidade: lead.cidade || '',
     area_formacao: '',
-    formacao_superior: 'nao_informado',
-    pretende_pos: 'nao_informado',
+    formacao_superior: lead.formacaoSuperior || 'nao_informado',
+    pretende_pos: lead.pretendePos || 'nao_informado',
     origem: 'forms-linkedin-pipeline',
     url_origem: null,
     utm_source: 'linkedin',
