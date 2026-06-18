@@ -75,8 +75,14 @@ module.exports = async function handler(req, res) {
           : await checkDuplicateByEmail(supabaseUrl, supabaseKey, lead.email);
 
         if (isDuplicate) {
+          await updateLeadFields(supabaseUrl, supabaseKey, lead);
           result.skipped += 1;
-          result.leads.push({ email: lead.email, status: 'skipped', reason: 'duplicate' });
+          result.leads.push({
+            email: lead.email,
+            status: 'updated',
+            formacao_superior: lead.formacaoSuperior,
+            pretende_pos: lead.pretendePos,
+          });
           continue;
         }
 
@@ -223,6 +229,31 @@ async function insertLead(supabaseUrl, supabaseKey, lead) {
   if (!response.ok) {
     const text = await response.text();
     throw new Error('Supabase insert error ' + response.status + ': ' + text);
+  }
+}
+
+async function updateLeadFields(supabaseUrl, supabaseKey, lead) {
+  const filter = lead.linkedinLeadId
+    ? '?linkedin_lead_id=eq.' + encodeURIComponent(lead.linkedinLeadId)
+    : '?email=eq.' + encodeURIComponent(lead.email) + '&origem=eq.forms-linkedin-pipeline';
+
+  const response = await fetch(getSupabaseRestBase(supabaseUrl) + '/' + TABLE_NAME + filter, {
+    method: 'PATCH',
+    headers: {
+      apikey: supabaseKey,
+      Authorization: 'Bearer ' + supabaseKey,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify({
+      formacao_superior: lead.formacaoSuperior,
+      pretende_pos: lead.pretendePos,
+    }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error('Supabase update error ' + response.status + ': ' + text);
   }
 }
 

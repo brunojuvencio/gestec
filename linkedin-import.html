@@ -152,8 +152,10 @@
       }
 
       let html = '<div class="card"><div class="stats">';
+      const updatedCount = result.leads ? result.leads.filter(function(l) { return l.status === 'updated'; }).length : 0;
       html += '<div class="stat synced"><strong>' + (result.synced || 0) + '</strong><span>Importados</span></div>';
-      html += '<div class="stat skipped-stat"><strong>' + (result.skipped || 0) + '</strong><span>Ignorados (já existem)</span></div>';
+      html += '<div class="stat" style="background:#eff6ff"><strong style="color:#2563eb;font-size:2rem;display:block;line-height:1">' + updatedCount + '</strong><span style="font-size:.8125rem;color:#6b7280;margin-top:.25rem;display:block">Atualizados</span></div>';
+      html += '<div class="stat skipped-stat"><strong>' + ((result.skipped || 0) - updatedCount) + '</strong><span>Sem mudança</span></div>';
       html += '<div class="stat error-stat"><strong>' + (result.errors ? result.errors.length : 0) + '</strong><span>Erros</span></div>';
       html += '</div></div>';
 
@@ -162,7 +164,7 @@
         html += '<tr><th>Email</th><th>Nome</th><th>Status</th><th>ActiveCampaign</th><th>Ploomes</th></tr>';
         result.leads.forEach(function(lead) {
           if (lead.status === 'skipped' && !lead.email) return;
-          const statusClass = lead.status === 'synced' ? 'badge-synced' : lead.status === 'skipped' ? 'badge-skipped' : 'badge-error';
+          const statusClass = lead.status === 'synced' ? 'badge-synced' : lead.status === 'updated' ? 'badge-ok' : lead.status === 'skipped' ? 'badge-skipped' : 'badge-error';
           const ac = lead.activeCampaign === 'ok' ? '<span class="badge badge-ok">ok</span>' : lead.activeCampaign ? '<span class="badge badge-err">erro</span>' : '—';
           const pl = lead.ploomes === 'ok' ? '<span class="badge badge-ok">ok</span>' : lead.ploomes ? '<span class="badge badge-err">erro</span>' : '—';
           html += '<tr>';
