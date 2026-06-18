@@ -2,6 +2,12 @@
   "functions": {
     "api/backfill-ploomes.js": {
       "maxDuration": 300
+    },
+    "api/linkedin-leads-import.js": {
+      "maxDuration": 60
+    },
+    "api/linkedin-lead-sync.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
