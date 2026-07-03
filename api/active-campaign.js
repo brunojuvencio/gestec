@@ -1,4 +1,5 @@
 const DEFAULT_TAG_NAME = 'palestra-gestec';
+const DEFAULT_LIST_ID = '52';
 
 const FIELD_ENV_MAP = [
   ['cidade', 'ACTIVE_CAMPAIGN_FIELD_CIDADE_ID'],
@@ -78,7 +79,7 @@ function getConfig() {
   return {
     baseUrl: normalizeBaseUrl(getEnvValue('ACTIVE_CAMPAIGN_BASE_URL') || getEnvValue('ACTIVE_CAMPAIGN_URL')),
     apiKey: getEnvValue('ACTIVE_CAMPAIGN_API_KEY'),
-    listId: getEnvValue('ACTIVE_CAMPAIGN_LIST_ID'),
+    listId: getEnvValue('ACTIVE_CAMPAIGN_LIST_ID') || DEFAULT_LIST_ID,
     tagName: getEnvValue('ACTIVE_CAMPAIGN_TAG_NAME') || DEFAULT_TAG_NAME,
     tagDescription:
       getEnvValue('ACTIVE_CAMPAIGN_TAG_DESCRIPTION') ||
