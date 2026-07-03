@@ -677,7 +677,7 @@ function getQuandoIniciarMbaOptionId(value) {
 
 function buildDealTitle(lead) {
   const name = lead.nome || 'Lead';
-  return 'Pre-MBA Gestao de Pipeline: Metricas e Indicadores Criticos - ' + name;
+  return 'Palestra Tecnologia em Vendas - ' + name;
 }
 
 function buildExistingContactNote(dealContexts) {
