@@ -13,7 +13,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/pre-mba-salestech.html"
+      "destination": "/landing.html"
     }
   ],
   "crons": [
