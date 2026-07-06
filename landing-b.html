@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tecnologia em Vendas: CRM, IA e Automação | Palestra Gratuita FUNDACE FEA-RP/USP</title>
+<meta name="description" content="Palestra gratuita: Tecnologia em vendas — CRM, automação e IA no funil comercial. 18 de julho, Anfiteatro FEA-RP/USP. Garanta sua vaga.">
+<meta property="og:title" content="Pré-MBA USP em Gestão Comercial e Salestech">
+<meta property="og:description" content="Tecnologia em vendas: CRM, automação e uso de IA no funil comercial. Palestra gratuita no Anfiteatro FEA-RP/USP.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-11029855018"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-11029855018');gtag('config','G-EZW8F7QZB0');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{background:'#0a0903',foreground:'#f5f3ef',border:'rgba(255,255,255,0.1)',primary:{DEFAULT:'#feb737',foreground:'#1a1100'},secondary:{DEFAULT:'rgba(255,255,255,0.06)',foreground:'rgba(255,255,255,0.6)'},muted:{DEFAULT:'rgba(255,255,255,0.06)',foreground:'rgba(255,255,255,0.45)'},card:{DEFAULT:'rgba(255,255,255,0.04)',foreground:'#f5f3ef'}}}}}</script>
+<style>
+:root{--yellow:#feb737;--yellow-soft:rgba(254,183,55,0.1);--gradient-hero:linear-gradient(160deg,#0d0b04 0%,#0a0903 55%,#0c0a04 100%);}
+*,*::before,*::after{box-sizing:border-box;}
+body{background:#0a0903;color:#f5f3ef;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+.container-x{max-width:1200px;margin:0 auto;padding:0 1.5rem;}
+@media(min-width:1024px){.container-x{padding:0 2rem;}}
+.surface-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;}
+.btn-yellow{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:#feb737;color:#1a1100;font-weight:700;padding:.875rem 1.75rem;border-radius:.75rem;font-size:.9375rem;border:none;cursor:pointer;text-decoration:none;transition:background .15s,transform .15s,box-shadow .15s;}
+.btn-yellow:hover{background:#ffd166;transform:translateY(-1px);box-shadow:0 8px 28px rgba(254,183,55,0.22);}
+.btn-yellow.w-full{width:100%;}
+.form-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:.75rem;padding:.75rem 1rem;font-size:.875rem;color:#f5f3ef;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;}
+.form-input::placeholder{color:rgba(255,255,255,0.28);}
+.form-input:focus{border-color:rgba(254,183,55,0.5);box-shadow:0 0 0 3px rgba(254,183,55,0.1);}
+.form-input.error{border-color:rgba(239,68,68,0.5);}
+select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='rgba(255,255,255,0.4)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;background-size:1.25rem;padding-right:2.5rem;appearance:none;}
+select.form-input option{background:#1a1209;color:#f5f3ef;}
+.form-label{display:block;font-size:.8125rem;font-weight:600;color:rgba(255,255,255,0.65);margin-bottom:.4rem;}
+.radio-opt{display:flex;align-items:center;gap:.5rem;padding:.6rem .875rem;border:1px solid rgba(255,255,255,0.1);border-radius:.625rem;cursor:pointer;font-size:.875rem;transition:border-color .15s,background .15s;}
+.radio-opt:hover{border-color:rgba(254,183,55,0.35);background:rgba(254,183,55,0.06);}
+.radio-opt input{accent-color:#feb737;}
+#msg-box{font-size:.875rem;margin-top:.25rem;}
+#msg-box.error{color:#f87171;}
+#msg-box.success{color:#4ade80;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#161209;border:1px solid rgba(255,255,255,0.12);border-radius:1.25rem;padding:2rem;max-width:480px;width:100%;position:relative;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(255,255,255,0.4);font-size:1.125rem;cursor:pointer;line-height:1;}
+.modal-close:hover{color:white;}
+.modal-icon{font-size:2.5rem;text-align:center;margin-bottom:1rem;}
+.modal-box h3{font-size:1.25rem;font-weight:700;text-align:center;margin-bottom:.75rem;}
+.modal-box p{font-size:.875rem;color:rgba(255,255,255,0.65);margin-bottom:.75rem;line-height:1.6;}
+/* Hero load animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.hero-l{animation:fadeUp .65s ease-out both;}
+.hero-r{animation:fadeUp .65s ease-out .15s both;}
+/* Scroll reveal */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease-out,transform .55s ease-out;}
+.reveal.is-visible{opacity:1;transform:translateY(0);}
+.rd1{transition-delay:.07s;}.rd2{transition-delay:.14s;}.rd3{transition-delay:.21s;}
+.rd4{transition-delay:.28s;}.rd5{transition-delay:.35s;}.rd6{transition-delay:.42s;}
+/* Section separator */
+.sep{height:1px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.1) 20%,rgba(255,255,255,0.1) 80%,transparent 100%);}
+/* Pain list */
+.pain-item{display:flex;align-items:flex-start;gap:.875rem;padding:.9rem 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.pain-item:last-child{border-bottom:none;padding-bottom:0;}
+.pain-dot{width:1.25rem;height:1.25rem;flex-shrink:0;margin-top:.2rem;color:rgba(254,183,55,.55);}
+/* Audience list */
+.audience-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:2rem;}
+@media(max-width:540px){.audience-grid{grid-template-columns:1fr;}}
+.aud-item{display:flex;align-items:center;gap:.75rem;padding:.8rem 1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:.75rem;font-size:.9rem;font-weight:500;line-height:1.3;transition:border-color .15s,background .15s;}
+.aud-item:hover{border-color:rgba(254,183,55,.28);background:rgba(254,183,55,.035);}
+.aud-icon{width:2rem;height:2rem;flex-shrink:0;display:grid;place-items:center;border-radius:.5rem;background:var(--yellow-soft);color:var(--yellow);}
+/* MBA chips */
+.mba-chip{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:.75rem;font-size:.875rem;font-weight:500;transition:border-color .15s;}
+.mba-chip:hover{border-color:rgba(254,183,55,.28);}
+.mba-icon{width:2rem;height:2rem;flex-shrink:0;display:grid;place-items:center;border-radius:.5rem;background:var(--yellow-soft);color:var(--yellow);}
+</style>
+</head>
+<body>
+<div class="min-h-screen bg-background text-foreground overflow-x-hidden">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-40 backdrop-blur-md bg-background/70 border-b border-border">
+  <div class="container-x flex items-center justify-between h-16">
+    <a href="/" class="flex items-center">
+      <img src="https://www.fundace.org.br/assets/lp/images/gepos/logo.png" alt="FUNDACE FEA-RP USP" class="h-8 w-auto">
+    </a>
+    <a href="#inscricao" class="btn-yellow !py-2 !px-4 text-sm">Quero minha vaga</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="relative isolate overflow-hidden" style="background-image:var(--gradient-hero)">
+  <div class="container-x grid lg:grid-cols-2 gap-8 lg:gap-12 py-14 lg:py-20 items-center">
+
+    <div class="hero-l">
+      <div class="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-[var(--yellow-soft)] px-4 py-1.5 text-xs font-semibold text-primary uppercase tracking-wider">
+        Pré-MBA em Gestão Comercial e Salestech
+      </div>
+      <p class="mt-4 text-sm font-medium text-muted-foreground tracking-wide">
+        18 de julho &nbsp;·&nbsp; 9h–11h &nbsp;·&nbsp; Anfiteatro FEA-RP/USP &nbsp;·&nbsp;
+        <span class="text-primary font-semibold">Gratuito</span>
+      </p>
+      <h1 class="mt-3 text-4xl sm:text-5xl lg:text-[3.1rem] font-bold tracking-tight leading-[1.08]" style="text-wrap:balance">
+        O problema não é a falta de CRM.
+        <span class="text-primary">É saber transformar dados em vendas.</span>
+      </h1>
+      <p class="mt-5 text-lg text-muted-foreground leading-relaxed border-l-2 border-primary/40 pl-4" style="max-width:36rem">
+        Em 2 horas, descubra o que separa times que batem meta dos que apagam incêndio — e saia com um plano concreto para usar CRM, automação e IA a favor das suas vendas.
+      </p>
+      <div class="mt-8">
+        <a href="#inscricao" class="btn-yellow text-base">
+          Reservar minha vaga gratuita
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-r">
+      <div class="surface-card p-7 sm:p-8 relative">
+        <div class="absolute -top-3 left-7 rounded-full bg-primary text-primary-foreground text-xs font-bold px-3 py-1 tracking-wide">Evento presencial · gratuito</div>
+        <p class="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-5">Detalhes do evento</p>
+        <div class="space-y-5">
+          <div class="flex items-center gap-4">
+            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--yellow-soft)] text-primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+            </div>
+            <div><div class="text-xs uppercase tracking-wider text-muted-foreground">Data</div><div class="text-lg font-semibold">18 de julho</div></div>
+          </div>
+          <div class="h-px" style="background:rgba(255,255,255,0.07)"></div>
+          <div class="flex items-center gap-4">
+            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--yellow-soft)] text-primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div><div class="text-xs uppercase tracking-wider text-muted-foreground">Horário</div><div class="text-lg font-semibold">Das 9h às 11h</div></div>
+          </div>
+          <div class="h-px" style="background:rgba(255,255,255,0.07)"></div>
+          <div class="flex items-center gap-4">
+            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--yellow-soft)] text-primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div><div class="text-xs uppercase tracking-wider text-muted-foreground">Local</div><div class="text-lg font-semibold">Anfiteatro FEA-RP/USP</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<div class="sep"></div>
+<section class="py-16 lg:py-20">
+  <div class="container-x max-w-4xl">
+    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight reveal" style="text-wrap:balance">
+      Sua equipe tem <span class="text-primary">mais ferramentas que resultados?</span>
+    </h2>
+    <p class="mt-4 text-lg text-muted-foreground leading-relaxed reveal rd1">
+      Ferramentas não faltam. O problema é que ninguém ensinou como transformá-las em vendas.
+    </p>
+
+    <div class="mt-7 reveal rd2">
+      <div class="pain-item">
+        <svg class="pain-dot" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="text-base sm:text-lg text-foreground/90">Informações espalhadas em diferentes sistemas</span>
+      </div>
+      <div class="pain-item">
+        <svg class="pain-dot" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="text-base sm:text-lg text-foreground/90">Vendedores gastando tempo com tarefas operacionais</span>
+      </div>
+      <div class="pain-item">
+        <svg class="pain-dot" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="text-base sm:text-lg text-foreground/90">Follow-ups esquecidos e oportunidades perdidas</span>
+      </div>
+      <div class="pain-item">
+        <svg class="pain-dot" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="text-base sm:text-lg text-foreground/90">Pouca previsibilidade sobre os próximos resultados</span>
+      </div>
+    </div>
+
+    <div class="mt-8 surface-card p-7 sm:p-8 border-primary/25 reveal rd3">
+      <div class="flex items-start gap-4">
+        <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground mt-0.5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <p class="text-base sm:text-lg leading-relaxed">
+          Nesta palestra, você sai com um mapa claro: onde plugar automação, quando acionar IA e como fazer seu CRM virar uma <strong class="text-primary">máquina previsível de vendas</strong> — sem trocar de sistema e sem aumentar o time.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIENCE -->
+<div class="sep"></div>
+<section class="py-16 lg:py-20">
+  <div class="container-x">
+    <div class="max-w-2xl reveal">
+      <span class="text-sm uppercase tracking-widest text-primary font-semibold">Para quem é</span>
+      <h2 class="mt-2 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight" style="text-wrap:balance">
+        Esta palestra foi desenhada para você
+      </h2>
+    </div>
+
+    <div class="audience-grid">
+      <div class="aud-item reveal rd1">
+        <div class="aud-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <span>Profissionais de vendas</span>
+      </div>
+      <div class="aud-item reveal rd2">
+        <div class="aud-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg></div>
+        <span>Gestores e líderes comerciais</span>
+      </div>
+      <div class="aud-item reveal rd3">
+        <div class="aud-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg></div>
+        <span>Usuários de CRM</span>
+      </div>
+      <div class="aud-item reveal rd4">
+        <div class="aud-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></svg></div>
+        <span>Empreendedores e fundadores</span>
+      </div>
+      <div class="aud-item reveal rd5">
+        <div class="aud-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/></svg></div>
+        <span>Profissionais de marketing</span>
+      </div>
+      <div class="aud-item reveal rd6">
+        <div class="aud-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/></svg></div>
+        <span>Quem quer entender o futuro das vendas</span>
+      </div>
+    </div>
+
+    <div class="mt-7 inline-flex items-center gap-3 rounded-full border border-primary/30 bg-[var(--yellow-soft)] px-5 py-2.5 text-sm reveal">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary flex-shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+      <span><strong>Único pré-requisito:</strong> ter graduação completa e vontade de vender mais.</span>
+    </div>
+  </div>
+</section>
+
+<!-- SPEAKER -->
+<div class="sep"></div>
+<section class="py-16 lg:py-20">
+  <div class="container-x grid lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] gap-10 lg:gap-14 items-center">
+
+    <div class="relative max-w-xs mx-auto lg:mx-0 reveal">
+      <div class="absolute inset-0 rounded-3xl blur-3xl opacity-35" style="background:radial-gradient(circle at 50% 40%,var(--yellow) 0%,transparent 60%)"></div>
+      <div class="relative surface-card overflow-hidden aspect-[3/4]">
+        <div class="absolute inset-0" style="background:linear-gradient(180deg,#1a1308 0%,#0d0a04 100%)"></div>
+        <img src="/professor%20ricardo.png" alt="Prof. Me. Ricardo Rossetto" class="absolute inset-0 w-full h-full object-cover object-top">
+        <div class="absolute bottom-4 left-4 right-4 rounded-2xl bg-background/70 backdrop-blur-md border border-border p-4">
+          <div class="text-xs uppercase tracking-widest text-primary">Palestrante</div>
+          <div class="mt-1 font-semibold">Prof. Me. Ricardo Rossetto</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal rd1">
+      <span class="text-sm uppercase tracking-widest text-primary font-semibold">Quem vai ministrar</span>
+      <h2 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]" style="text-wrap:balance">
+        30 anos de experiência comercial. <span class="text-primary">530+ empresas transformadas.</span>
+      </h2>
+      <div class="mt-5 text-xl font-semibold">Prof. Me. Ricardo Rossetto</div>
+      <div class="mt-4 space-y-3 text-muted-foreground leading-relaxed">
+        <p>Mais de 30 anos em marketing e vendas — de multinacionais a pequenas empresas. Mestre em Branding pela FEA-RP/USP, com mais de 530 projetos pelo método <span class="text-foreground">Marketing Estratégico Pró Vendas e Valor</span>.</p>
+        <p>Professor dos MBAs da USP e autor do livro <em class="text-foreground">Destravar da Pequena Gigante</em>.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- INSCRIPTION -->
+<div class="sep"></div>
+<section id="inscricao" class="py-16 lg:py-20">
+  <div class="container-x grid lg:grid-cols-2 gap-10 lg:gap-12 items-start">
+
+    <div class="reveal lg:sticky lg:top-24">
+      <span class="text-sm uppercase tracking-widest text-primary font-semibold">Inscrição gratuita</span>
+      <h2 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]" style="text-wrap:balance">
+        Reserve seu lugar <span class="text-primary">antes que esgote</span>
+      </h2>
+      <p class="mt-4 text-lg text-muted-foreground leading-relaxed">Vagas limitadas. Leva menos de 1 minuto para se inscrever.</p>
+      <div class="mt-6 flex flex-wrap gap-2">
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3.5 py-1.5 text-sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+          100% gratuito
+        </span>
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3.5 py-1.5 text-sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+          Presencial
+        </span>
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3.5 py-1.5 text-sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+          Vagas limitadas
+        </span>
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3.5 py-1.5 text-sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>
+          Certificado
+        </span>
+      </div>
+    </div>
+
+    <div class="reveal rd1">
+      <div class="surface-card p-7 sm:p-8">
+        <div class="text-xs uppercase tracking-widest text-primary font-semibold">Inscrição gratuita</div>
+        <h3 class="mt-2 text-xl font-semibold">Preencha seus dados</h3>
+        <form id="register-form" novalidate class="mt-6 space-y-4">
+          <div>
+            <span class="form-label">Possui formação superior? <span style="color:#feb737">*</span></span>
+            <div class="flex flex-wrap gap-2 mt-1">
+              <label class="radio-opt"><input type="radio" name="formacao_superior" value="sim" required> Sim</label>
+              <label class="radio-opt"><input type="radio" name="formacao_superior" value="nao"> Não</label>
+            </div>
+          </div>
+          <div>
+            <label for="nome" class="form-label">Nome completo <span style="color:#feb737">*</span></label>
+            <input id="nome" type="text" placeholder="Digite seu nome completo" required class="form-input">
+          </div>
+          <div>
+            <label for="email" class="form-label">E-mail <span style="color:#feb737">*</span></label>
+            <input id="email" type="email" placeholder="seu@email.com" required class="form-input">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="cidade" class="form-label">Cidade</label>
+              <input id="cidade" type="text" placeholder="Sua cidade" class="form-input">
+            </div>
+            <div>
+              <label for="telefone" class="form-label">Telefone <span style="color:#feb737">*</span></label>
+              <input id="telefone" type="tel" placeholder="(11) 99999-9999" required class="form-input">
+            </div>
+          </div>
+          <div>
+            <label for="area_formacao" class="form-label">Área de formação <span style="color:#feb737">*</span></label>
+            <select id="area_formacao" required class="form-input">
+              <option value="" disabled selected>Selecione sua área</option>
+              <option>Comercial / Vendas</option>
+              <option>Marketing</option>
+              <option>Negócios / Gestão</option>
+              <option>Administração</option>
+              <option>Economia</option>
+              <option>Engenharia</option>
+              <option>Outra</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="empresa" class="form-label">Empresa <span style="color:#feb737">*</span></label>
+              <input id="empresa" type="text" placeholder="Nome da empresa" required class="form-input">
+            </div>
+            <div>
+              <label for="cargo" class="form-label">Cargo <span style="color:#feb737">*</span></label>
+              <input id="cargo" type="text" placeholder="Seu cargo" required class="form-input">
+            </div>
+          </div>
+          <div>
+            <span class="form-label">Pretende fazer uma pós-graduação ou MBA? <span style="color:#feb737">*</span></span>
+            <div class="flex flex-col gap-2 mt-1">
+              <label class="radio-opt"><input type="radio" name="pretende_pos" value="sim_agora" required> Sim, imediatamente</label>
+              <label class="radio-opt"><input type="radio" name="pretende_pos" value="sim_depois"> Sim, mas não agora</label>
+              <label class="radio-opt"><input type="radio" name="pretende_pos" value="nao"> Não</label>
+            </div>
+          </div>
+          <div id="msg-box"></div>
+          <button type="submit" id="submit-btn" class="btn-yellow w-full mt-2">
+            Reservar minha vaga agora
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+          <p class="mt-3 text-xs text-center" style="color:rgba(255,255,255,0.35)">Ao se inscrever você concorda em receber comunicações do evento.</p>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MBA -->
+<div class="sep"></div>
+<section class="relative py-16 lg:py-20" style="background-color:#0c0b05">
+  <div class="absolute inset-0 pointer-events-none opacity-30" style="background:radial-gradient(60% 50% at 80% 0%,rgba(254,183,55,0.14),transparent 60%)"></div>
+  <div class="container-x relative">
+    <div class="max-w-3xl reveal">
+      <span class="text-sm uppercase tracking-widest text-primary font-semibold">O MBA</span>
+      <h2 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]" style="text-wrap:balance">
+        Esta palestra é uma amostra. <span class="text-primary">O MBA é a transformação completa.</span>
+      </h2>
+      <p class="mt-4 text-lg text-muted-foreground leading-relaxed">
+        A palestra faz parte do ciclo Pré-MBA USP em Gestão Comercial e Salestech.
+      </p>
+    </div>
+
+    <div class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="mba-chip reveal rd1">
+        <div class="mba-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
+        <span>Operações orientadas por dados</span>
+      </div>
+      <div class="mba-chip reveal rd2">
+        <div class="mba-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg></div>
+        <span>CRM estratégico</span>
+      </div>
+      <div class="mba-chip reveal rd3">
+        <div class="mba-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg></div>
+        <span>Automação para produtividade</span>
+      </div>
+      <div class="mba-chip reveal rd4">
+        <div class="mba-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/></svg></div>
+        <span>IA aplicada em vendas</span>
+      </div>
+      <div class="mba-chip reveal rd5">
+        <div class="mba-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg></div>
+        <span>Processos comerciais escaláveis</span>
+      </div>
+      <div class="mba-chip reveal rd6">
+        <div class="mba-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg></div>
+        <span>Previsibilidade de resultados</span>
+      </div>
+      <div class="mba-chip reveal">
+        <div class="mba-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg></div>
+        <span>Liderança comercial digital</span>
+      </div>
+    </div>
+
+    <div class="mt-10 flex justify-center reveal">
+      <a href="https://www.fundace.org.br/curso/mba-usp-gestao-comercial-e-salestech" target="_blank" rel="noopener noreferrer" class="btn-yellow text-base">
+        Saber mais sobre o MBA
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-border py-8">
+  <div class="container-x flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
+    <div>© 2026 FUNDACE · FEA-RP/USP</div>
+    <div>Pré-MBA em Gestão Comercial e Salestech</div>
+  </div>
+</footer>
+
+</div>
+
+<!-- MODAL -->
+<div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close">&#x2715;</button>
+    <div class="modal-icon">&#x2713;</div>
+    <h3>Você está dentro!</h3>
+    <p>Sua vaga foi reservada. Em breve você recebe um e-mail com todos os detalhes do evento.</p>
+    <p class="text-xs" style="color:rgba(255,255,255,0.35)">Sua vaga será confirmada após o recebimento do e-mail.</p>
+    <button class="btn-yellow w-full" id="modal-btn-ok">Entendido</button>
+  </div>
+</div>
+
+<script src="js/form-supabase-cdn.js?v=11"></script>
+<script>
+(function(){
+  var m=document.getElementById('confirm-modal');
+  function o(){m.classList.add('open');}
+  function c(){m.classList.remove('open');}
+  document.getElementById('modal-close').addEventListener('click',c);
+  document.getElementById('modal-btn-ok').addEventListener('click',c);
+  m.addEventListener('click',function(e){if(e.target===m)c();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')c();});
+  document.addEventListener('inscricao-confirmada',o);
+})();
+
+(function(){
+  var els=document.querySelectorAll('.reveal');
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){entry.target.classList.add('is-visible');io.unobserve(entry.target);}
+    });
+  },{threshold:0.1,rootMargin:'0px 0px -36px 0px'});
+  els.forEach(function(el){io.observe(el);});
+})();
+</script>
+
+</body>
+</html>
