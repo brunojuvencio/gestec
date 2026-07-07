@@ -20,6 +20,7 @@ const DEFAULT_DEAL_FIELDS = {
   utmCampaignLegacy: 'deal_D2CE4181-14B7-414C-85F8-D522DC12BD2E',
   utmContent: 'deal_983E5B92-501D-4074-840B-0B22BDD5A987',
   utmSummary: 'deal_1B9FDED4-84A6-4617-A860-6919EBC920D7',
+  urgencia: 'deal_74219D35-6B80-48C4-BC22-29DD64B3EAE5',
 }
 
 const DEFAULT_DEAL_OPTIONS = {
@@ -564,6 +565,11 @@ function addDefaultDealProperties(properties, lead) {
         toNumberOrEmpty(DEFAULT_DEAL_OPTIONS.interesseMba),
     });
   }
+
+  pushOtherProperty(properties, {
+    FieldKey: getEnvValue('PLOOMES_DEAL_FIELD_URGENCIA_KEY') || DEFAULT_DEAL_FIELDS.urgencia,
+    StringValue: formatLeadValue('pretende_pos', lead.pretende_pos) || 'Nao informado',
+  });
 
   addOptionalStringProperty(
     properties,
