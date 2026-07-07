@@ -326,12 +326,11 @@ async function createExistingContactNote(config, contact, deal, inscricoes) {
   }
 
   const dealId = deal ? (deal.Id || deal.id) : null;
-  const dealContexts = await findRecentDealContexts(config, contactId);
   const payload = removeEmpty({
     ContactId: contactId,
     DealId: toNumberOrEmpty(dealId),
     TypeId: toNumberOrEmpty(config.interactionTypeId),
-    Content: buildExistingContactNote(dealContexts, inscricoes),
+    Content: buildExistingContactNote(inscricoes),
   });
 
   const result = await ploomesRequest(config, '/InteractionRecords', {
@@ -695,36 +694,15 @@ function buildDealTitle(lead) {
   return 'Palestra Tecnologia em Vendas - ' + name;
 }
 
-function buildExistingContactNote(dealContexts, inscricoes) {
-  const rows = [
-    'Este contato ja possui historico no CRM.',
-    'Antes de iniciar uma nova abordagem, vale revisar o contexto mais recente:',
-  ];
-
-  if (dealContexts.length) {
-    dealContexts.forEach(function (deal, index) {
-      const pipelineName = deal.pipelineName || formatFallbackEntityName('ID', deal.pipelineId);
-      const stageName = deal.stageName || formatFallbackEntityName('ID', deal.stageId);
-
-      rows.push(
-        index +
-          1 +
-          '. ' +
-          deal.title +
-          ' | Funil: ' +
-          pipelineName +
-          ' | Etapa: ' +
-          stageName
-      );
-    });
-  } else {
-    rows.push('Nenhum negocio anterior encontrado para este contato.');
-  }
+function buildExistingContactNote(inscricoes) {
+  const rows = ['Este contato ja possui historico no CRM.'];
 
   const palestraSection = buildPalestraHistory(inscricoes);
   if (palestraSection) {
     rows.push('');
     rows.push(palestraSection);
+  } else {
+    rows.push('Nenhuma inscricao anterior encontrada.');
   }
 
   return rows.join('\n');
