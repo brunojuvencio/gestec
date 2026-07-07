@@ -1,4 +1,11 @@
 const DEFAULT_BASE_URL = 'https://public-api2.ploomes.com';
+
+const ORIGEM_LABEL = {
+  'palestra-tecnologia-em-vendas': 'Palestra Tecnologia em Vendas',
+  'pre-mba-salestech': 'Pre-MBA Gestao Comercial e Salestech',
+  'pre-mba-salestech-pipeline': 'Pre-MBA Gestao Comercial e Salestech (LinkedIn)',
+  'forms-linkedin-pipeline': 'Pre-MBA Gestao Comercial e Salestech (LinkedIn)',
+};
 const DEFAULT_DEAL_PIPELINE_ID = '50003849';
 const DEFAULT_DEAL_STAGE_ID = '50018646';
 
@@ -97,13 +104,15 @@ module.exports = async function handler(req, res) {
     const stageId = config.stageId || (await findFirstStageId(config, config.pipelineId));
     const deal = await createDeal(config, lead, contactResult.contact, stageId);
 
+    const inscricoes = await fetchLeadInscricoes(lead.email);
+
     let history = null;
     let existingContactNote = null;
 
     if (contactResult.created) {
-      history = await createHistoryRecord(config, lead, contactResult.contact, deal);
+      history = await createHistoryRecord(config, lead, contactResult.contact, deal, inscricoes);
     } else {
-      existingContactNote = await createExistingContactNote(config, contactResult.contact, deal);
+      existingContactNote = await createExistingContactNote(config, contactResult.contact, deal, inscricoes);
     }
 
     return res.status(200).json({
@@ -310,7 +319,7 @@ async function findLatestDealByTitle(config, title) {
   return getCollection(result.body)[0] || null;
 }
 
-async function createExistingContactNote(config, contact, deal) {
+async function createExistingContactNote(config, contact, deal, inscricoes) {
   const contactId = contact.Id || contact.id;
   if (!contactId) {
     throw createPublicError('Ploomes nao retornou o contato existente.');
@@ -322,7 +331,7 @@ async function createExistingContactNote(config, contact, deal) {
     ContactId: contactId,
     DealId: toNumberOrEmpty(dealId),
     TypeId: toNumberOrEmpty(config.interactionTypeId),
-    Content: buildExistingContactNote(dealContexts),
+    Content: buildExistingContactNote(dealContexts, inscricoes),
   });
 
   const result = await ploomesRequest(config, '/InteractionRecords', {
@@ -433,14 +442,14 @@ async function findLatestContactInteractionRecord(config, contactId) {
   return note;
 }
 
-async function createHistoryRecord(config, lead, contact, deal) {
+async function createHistoryRecord(config, lead, contact, deal, inscricoes) {
   const dealId = deal.Id || deal.id;
   const contactId = deal.ContactId || deal.contactId || contact.Id || contact.id;
   const payload = removeEmpty({
     ContactId: contactId,
     DealId: dealId,
     TypeId: toNumberOrEmpty(config.interactionTypeId),
-    Content: buildLeadHistory(lead),
+    Content: buildLeadHistory(lead, inscricoes),
   });
 
   const result = await ploomesRequest(config, '/InteractionRecords', {
@@ -686,7 +695,7 @@ function buildDealTitle(lead) {
   return 'Palestra Tecnologia em Vendas - ' + name;
 }
 
-function buildExistingContactNote(dealContexts) {
+function buildExistingContactNote(dealContexts, inscricoes) {
   const rows = [
     'Este contato ja possui historico no CRM.',
     'Antes de iniciar uma nova abordagem, vale revisar o contexto mais recente:',
@@ -712,6 +721,12 @@ function buildExistingContactNote(dealContexts) {
     rows.push('Nenhum negocio anterior encontrado para este contato.');
   }
 
+  const palestraSection = buildPalestraHistory(inscricoes);
+  if (palestraSection) {
+    rows.push('');
+    rows.push(palestraSection);
+  }
+
   return rows.join('\n');
 }
 
@@ -735,7 +750,7 @@ function formatFallbackEntityName(label, value) {
   return cleanValue ? label + ' ' + cleanValue : 'Nao informado';
 }
 
-function buildLeadHistory(lead) {
+function buildLeadHistory(lead, inscricoes) {
   const rows = [
     ['Nome', lead.nome],
     ['E-mail', lead.email],
@@ -755,10 +770,68 @@ function buildLeadHistory(lead) {
     ['UTM content', lead.utm_content],
   ];
 
-  return rows
+  const lines = rows
     .filter(([, value]) => cleanString(value))
-    .map(([label, value]) => label + ': ' + value)
-    .join('\n');
+    .map(([label, value]) => label + ': ' + value);
+
+  const palestraSection = buildPalestraHistory(inscricoes);
+  if (palestraSection) {
+    lines.push('');
+    lines.push(palestraSection);
+  }
+
+  return lines.join('\n');
+}
+
+async function fetchLeadInscricoes(email) {
+  const supabaseUrl = cleanString(getEnvValue('SUPABASE_URL')).replace(/\/+$/, '');
+  const supabaseKey = cleanString(getEnvValue('SUPABASE_SERVICE_ROLE_KEY'));
+  if (!supabaseUrl || !supabaseKey || !email) return [];
+
+  try {
+    const url =
+      supabaseUrl +
+      '/rest/v1/inscricoes_vendas?select=origem,criado_em&email=eq.' +
+      encodeURIComponent(email) +
+      '&order=criado_em.asc';
+    const response = await fetch(url, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: 'Bearer ' + supabaseKey,
+        Accept: 'application/json',
+      },
+    });
+    if (!response.ok) return [];
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function buildPalestraHistory(inscricoes) {
+  if (!inscricoes || !inscricoes.length) return '';
+
+  const lines = ['Historico de inscricoes:'];
+  inscricoes.forEach(function (ins, index) {
+    const label = ORIGEM_LABEL[ins.origem] || ins.origem;
+    let dateStr = '';
+    if (ins.criado_em) {
+      try {
+        const d = new Date(ins.criado_em);
+        dateStr =
+          ' — ' +
+          String(d.getUTCDate()).padStart(2, '0') +
+          '/' +
+          String(d.getUTCMonth() + 1).padStart(2, '0') +
+          '/' +
+          d.getUTCFullYear();
+      } catch (_) {}
+    }
+    lines.push(index + 1 + '. ' + label + dateStr);
+  });
+
+  return lines.join('\n');
 }
 
 function formatLeadValue(key, value) {
