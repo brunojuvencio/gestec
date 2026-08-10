@@ -691,7 +691,7 @@ function getQuandoIniciarMbaOptionId(value) {
 
 function buildDealTitle(lead) {
   const name = lead.nome || 'Lead';
-  return 'Palestra Tecnologia em Vendas - ' + name;
+  return 'Palestra SalesTech - ' + name;
 }
 
 function buildExistingContactNote(inscricoes) {
