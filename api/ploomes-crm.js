@@ -2,6 +2,7 @@ const DEFAULT_BASE_URL = 'https://public-api2.ploomes.com';
 
 const ORIGEM_LABEL = {
   'palestra-tecnologia-em-vendas': 'Palestra Tecnologia em Vendas',
+  'palestra-salestech': 'Palestra SalesTech - Frameworks e Metodologias para Escalar Receita',
   'pre-mba-salestech': 'Pre-MBA Gestao Comercial e Salestech',
   'pre-mba-salestech-pipeline': 'Pre-MBA Gestao Comercial e Salestech (LinkedIn)',
   'forms-linkedin-pipeline': 'Pre-MBA Gestao Comercial e Salestech (LinkedIn)',

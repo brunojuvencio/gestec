@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
       empresa: getFieldValue('empresa'),
       cargo: getFieldValue('cargo'),
       pretende_pos: form.querySelector('input[name="pretende_pos"]:checked').value,
-      origem: 'palestra-tecnologia-em-vendas',
+      origem: 'palestra-salestech',
       url_origem: window.location.href,
       utm_source: getQueryParam('utm_source'),
       utm_medium: getQueryParam('utm_medium'),
