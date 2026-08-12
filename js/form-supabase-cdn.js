@@ -445,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.disabled = true;
       btn.innerHTML = 'Inscrição realizada';
       form.reset();
-      document.dispatchEvent(new CustomEvent('inscricao-confirmada'));
+      document.dispatchEvent(new CustomEvent('inscricao-confirmada', { detail: { formacao_superior: formData.formacao_superior } }));
     } catch (error) {
       console.error('Erro ao processar inscricao:', error);
       setMsg('error', 'Nao foi possivel confirmar sua inscricao agora. Tente novamente.');
